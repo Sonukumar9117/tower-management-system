@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,7 @@ public class AuthService {
     private  final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserDetailsService userDetailsService;
     public SuccessResponse signup(SignupRequestDto signupRequestDto){
         if (!signupRequestDto.getConfirmPassword().equals(signupRequestDto.getPassword())){
             throw new CustomException("Confirm password doesn't match");
@@ -64,7 +67,8 @@ public class AuthService {
                 build();
     }
     public SuccessLoginResponse login(LoginRequestDto loginRequestDto){
-        UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(),loginRequestDto.getPassword(),null);
+        UserDetails userDetails= userDetailsService.loadUserByUsername(loginRequestDto.getEmail());
+        UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userDetails,loginRequestDto.getPassword(),null);
        Authentication authentication= authenticationManager.authenticate(authenticationToken);
        if(authentication.isAuthenticated()){
            SuccessLoginResponse successLoginResponse=new SuccessLoginResponse();

@@ -15,5 +15,4 @@ public class UserResponseDto {
     private String image;
     private UserRole role;
 
-
 }

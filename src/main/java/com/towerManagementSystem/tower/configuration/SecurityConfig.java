@@ -29,9 +29,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request-> request
-                        .requestMatchers("/api/v1/user/**")
+                        .requestMatchers(
+                                "/api/v1/user/**",
+                                "/api/v1/complaint/**",
+                                "/api/v1/post/**"
+                        )
                         .authenticated()
-                        .anyRequest().permitAll())
+                        .anyRequest()
+                        .permitAll())
                 .sessionManagement(
                         sessionConfig->
                                 sessionConfig

@@ -1,7 +1,5 @@
 package com.towerManagementSystem.tower.configuration;
 
-import com.towerManagementSystem.tower.modal.User;
-import com.towerManagementSystem.tower.respository.UserRepository;
 import com.towerManagementSystem.tower.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -14,19 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
 public class JwtFilter extends OncePerRequestFilter {
-    private  final UserRepository userRepository;
+    private  final UserDetailsService userDetailsService;
     private final JwtService jwtService;
     @Autowired
     @Qualifier("handlerExceptionResolver")
@@ -43,11 +40,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 String token=authHeader.substring(7);
                 Claims claims= jwtService.verifyTokenAndGetClaims(token);
                 String email=claims.getSubject();
-                User user=userRepository.findByEmail(email).orElseThrow(()->new JwtException("Invalid token"));
-                List<GrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority( "ROLE_"+user.getRole()));
+                UserDetails userDetails= userDetailsService.loadUserByUsername(email);
+
                 if(!jwtService.isTokenExpired(token)){
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(email,null,authorities);
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
                 else throw new JwtException("Token expired.");
@@ -55,7 +51,6 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request,response);
         }
         catch (JwtException exception){
-            exception.printStackTrace();
             exceptionResolver.resolveException(request,response,null,exception);
         }
     }

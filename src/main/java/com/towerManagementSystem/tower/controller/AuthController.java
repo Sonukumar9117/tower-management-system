@@ -4,6 +4,7 @@ import com.towerManagementSystem.tower.dto.LoginRequestDto;
 import com.towerManagementSystem.tower.dto.SignupRequestDto;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public  ResponseEntity<SuccessResponse>login(@RequestBody LoginRequestDto loginRequestDto){
+    public  ResponseEntity<SuccessResponse>login(@RequestBody @Valid LoginRequestDto loginRequestDto){
+        System.out.println(loginRequestDto);
         SuccessResponse successResponse=authService.login(loginRequestDto);
         return ResponseEntity.ok(successResponse);
     }

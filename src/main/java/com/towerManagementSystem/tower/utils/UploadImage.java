@@ -15,6 +15,7 @@ public class UploadImage {
     private static String uploadDir="E:\\tower\\tower\\src\\main\\java\\com\\towerManagementSystem\\tower\\images";
     public static void uploadImage(MultipartFile file, String currentFileName)throws ImageException{
         try{
+            System.out.println(file+"This is file");
             String imageType= file.getContentType();
             Path uploadPath= Paths.get(uploadDir);
             if(!Files.exists(uploadPath)){

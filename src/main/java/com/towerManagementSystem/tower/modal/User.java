@@ -1,5 +1,7 @@
 package com.towerManagementSystem.tower.modal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.towerManagementSystem.tower.domain.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,7 +40,11 @@ public class User implements UserDetails {
     private UserRole role;
     @Column(nullable = false)
     private String password;
+    @ElementCollection
     private final List<String> fcmTokens=new ArrayList<>();
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, fetch = FetchType.EAGER , orphanRemoval = true)
+    @JsonIgnore
+    private List<Post>posts=new ArrayList<>();
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
