@@ -2,10 +2,13 @@ package com.towerManagementSystem.tower.service;
 
 import com.towerManagementSystem.tower.dto.Resposne.Pagination;
 import com.towerManagementSystem.tower.dto.Resposne.PostResponse;
+import com.towerManagementSystem.tower.dto.Resposne.SuccessPostUpdateResponse;
 import com.towerManagementSystem.tower.dto.Resposne.UserResponseDto;
 import com.towerManagementSystem.tower.dto.SuccessPostResponse;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.dto.request.PostDto;
+import com.towerManagementSystem.tower.dto.request.UpdatePostDto;
+import com.towerManagementSystem.tower.exception.CustomException;
 import com.towerManagementSystem.tower.modal.Post;
 import com.towerManagementSystem.tower.modal.User;
 import com.towerManagementSystem.tower.respository.PostRepository;
@@ -104,7 +107,6 @@ public class PostService {
         successPostResponse.setMessage("Post fetched successfully.");
         return successPostResponse;
     }
-
     public SuccessResponse deleteById(String  id) {
         Post post=postRepository.findById(id).orElseThrow(()->new UsernameNotFoundException("Post not found"));
         User user=post.getCreatedBy();
@@ -119,5 +121,57 @@ public class PostService {
                 .success(true)
                 .status(HttpStatus.OK.value())
                 .build();
+    }
+
+    @Transactional
+    public SuccessPostUpdateResponse updatePostById(String postId, UpdatePostDto postDto){
+      Post post= postRepository.findById(postId).orElseThrow(()->new CustomException("Post doesn't exist"));
+      if(postDto.getDescription()!=null){
+          post.setDescription(postDto.getDescription());
+          post.setUpdatedAt(LocalDateTime.now());
+      }
+      if(postDto.getTitle()!=null){
+          post.setTitle(postDto.getTitle());
+          post.setUpdatedAt(LocalDateTime.now());
+      }
+      if(postDto.getImages()!=null && !postDto.getImages().isEmpty()){
+          List<String>fileName=new ArrayList<>();
+          for(int i=0;i<postDto.getImages().size();i++){
+              fileName.add(UUID.randomUUID()+".png");
+          }
+          post.setImages(fileName);
+          for(int i=0;i<fileName.size();i++){
+              UploadImage.uploadImage(postDto.getImages().get(i),fileName.get(i));
+          }
+          post.setUpdatedAt(LocalDateTime.now());
+      }
+      List<String> imageUrl=new ArrayList<>();
+      for(String fileName:post.getImages()){
+          imageUrl.add(UploadImage.generateImageUrl(fileName));
+      }
+      User user= post.getCreatedBy();
+      UserResponseDto userResponseDto=UserResponseDto.builder()
+              .role(user.getRole())
+              .phone(user.getPhone())
+              .email(user.getEmail())
+              .id(user.getUserId())
+              .image(UploadImage.generateImageUrl(user.getImage()))
+              .build();
+        PostResponse postResponse=PostResponse.builder()
+                .title(post.getTitle())
+                .description(post.getDescription())
+                .id(post.getPostId())
+                .images(imageUrl)
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .createdBy(userResponseDto)
+                .build();
+       SuccessPostUpdateResponse postUpdateResponse=new SuccessPostUpdateResponse();
+       postUpdateResponse.setPost(postResponse);
+       postUpdateResponse.setStatus(HttpStatus.OK.value());
+       postUpdateResponse.setMessage("Post updated successfully");
+       postUpdateResponse.setSuccess(true);
+       postUpdateResponse.setTimeStamp(LocalDateTime.now());
+      return postUpdateResponse;
     }
 }

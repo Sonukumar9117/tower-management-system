@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SuccessResponse {
-    String message;
-    Integer status;
-    boolean success;
-    LocalDateTime timeStamp;
+    private String message;
+    private Integer status;
+    private boolean success;
+    private LocalDateTime timeStamp;
 }

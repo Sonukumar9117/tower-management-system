@@ -1,14 +1,14 @@
 package com.towerManagementSystem.tower.controller;
 
+import com.towerManagementSystem.tower.dto.Resposne.SuccessPostUpdateResponse;
 import com.towerManagementSystem.tower.dto.SuccessPostResponse;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.dto.request.PostDto;
-import com.towerManagementSystem.tower.modal.Post;
+import com.towerManagementSystem.tower.dto.request.UpdatePostDto;
 import com.towerManagementSystem.tower.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -29,12 +29,16 @@ public class PostController {
         return ResponseEntity.ok(postResponse);
     }
 
-    public ResponseEntity<?>updatePost(){
-        return ResponseEntity.ok("");
+    @PutMapping("/{id}")
+    public ResponseEntity<SuccessPostUpdateResponse>updatePost(@PathVariable("id") String id,  @ModelAttribute UpdatePostDto updatePostDto){
+        SuccessPostUpdateResponse postUpdateResponse=postService.updatePostById(id,updatePostDto);
+        return ResponseEntity.ok(postUpdateResponse);
     }
+
     public ResponseEntity<?>getPostById(){
         return ResponseEntity.ok("");
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?>deletePostById(@PathVariable("id") String id){
         SuccessResponse successResponse=postService.deleteById(id);
