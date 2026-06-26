@@ -22,6 +22,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+
 @Table(name = "user", indexes = {@Index(name="email_index", columnList = "email"), @Index(name = "phone_index", columnList = "phone")})
 public class User implements UserDetails {
     @Id
@@ -40,16 +41,24 @@ public class User implements UserDetails {
     private UserRole role;
     @Column(nullable = false)
     private String password;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private final List<String> fcmTokens=new ArrayList<>();
-    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, fetch = FetchType.EAGER , orphanRemoval = true)
-    @JsonIgnore
-    private List<Post>posts=new ArrayList<>();
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
+    @OneToOne(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Tenant tenant;
+    @OneToOne(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Admin admin;
+    @OneToOne(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Technician technician;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_"+this.role));

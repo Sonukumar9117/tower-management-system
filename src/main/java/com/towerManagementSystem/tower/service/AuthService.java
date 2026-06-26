@@ -1,11 +1,15 @@
 package com.towerManagementSystem.tower.service;
 
+import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.LoginRequestDto;
 import com.towerManagementSystem.tower.dto.Resposne.SuccessLoginResponse;
-import com.towerManagementSystem.tower.dto.Resposne.UserResponseDto;
 import com.towerManagementSystem.tower.dto.SignupRequestDto;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.exception.CustomException;
+import com.towerManagementSystem.tower.mapper.UserMapper;
+import com.towerManagementSystem.tower.modal.Admin;
+import com.towerManagementSystem.tower.modal.Technician;
+import com.towerManagementSystem.tower.modal.Tenant;
 import com.towerManagementSystem.tower.modal.User;
 import com.towerManagementSystem.tower.respository.UserRepository;
 import com.towerManagementSystem.tower.utils.UploadImage;
@@ -31,6 +35,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
+
     public SuccessResponse signup(SignupRequestDto signupRequestDto){
         if (!signupRequestDto.getConfirmPassword().equals(signupRequestDto.getPassword())){
             throw new CustomException("Confirm password doesn't match");
@@ -56,7 +61,21 @@ public class AuthService {
                 .image(currentFileName)
                 .password(passwordEncoder.encode(signupRequestDto.getPassword()))
                 .build();
-
+       if(user.getRole()== UserRole.ADMIN){
+           Admin admin=new Admin();
+           admin.setUser(user);
+           user.setAdmin(admin);
+       }
+       else if(user.getRole()==UserRole.TENANT){
+           Tenant tenant=new Tenant();
+           tenant.setUser(user);
+           user.setTenant(tenant);
+       }
+       else if(user.getRole()==UserRole.TECHNICIAN){
+           Technician technician=new Technician();
+           technician.setUser(user);
+           user.setTechnician(technician);
+       }
         UploadImage.uploadImage(signupRequestDto.getImage(), currentFileName);
         userRepository.save(user);
         return SuccessResponse.builder()
@@ -66,6 +85,7 @@ public class AuthService {
                 .timeStamp(LocalDateTime.now()).
                 build();
     }
+
     public SuccessLoginResponse login(LoginRequestDto loginRequestDto){
         UserDetails userDetails= userDetailsService.loadUserByUsername(loginRequestDto.getEmail());
         UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userDetails,loginRequestDto.getPassword(),null);
@@ -78,16 +98,8 @@ public class AuthService {
            successLoginResponse.setStatus(HttpStatus.OK.value());
            User user=(User) authentication.getPrincipal();
            assert user != null;
-           String imageName=user.getImage();
-           UserResponseDto userResponseDto=UserResponseDto.builder()
-                   .role(user.getRole())
-                   .email(user.getEmail())
-                   .id(user.getUserId())
-                   .phone(user.getPhone())
-                   .image(UploadImage.generateImageUrl(imageName))
-                   .build();
            successLoginResponse.setToken(jwtService.generateToken(user));
-           successLoginResponse.setUser(userResponseDto);
+           successLoginResponse.setUser(UserMapper.toUserResponseDto(user));
           return successLoginResponse;
        }
        throw new CustomException("Login failed");

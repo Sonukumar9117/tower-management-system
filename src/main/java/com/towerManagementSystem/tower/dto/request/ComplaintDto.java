@@ -1,7 +1,9 @@
 package com.towerManagementSystem.tower.dto.request;
 
+import com.towerManagementSystem.tower.domain.ConcernedDepartment;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,5 +25,11 @@ public class ComplaintDto {
     @NotBlank(message = "Description is required filed.")
     @Size(min = 10, message = "Length of description must be greater than 100 characters")
     private String description;
+    @NotBlank(message = "Days facing issue can't be null")
+    public Integer daysFacingIssue;
+    @NotBlank(message = "Building can't be null")
+    private String building;
+    @NotNull(message = "Concerned department is required field.")
+    private ConcernedDepartment concernedDepartment;
     private List<MultipartFile> images=new ArrayList<>();
 }

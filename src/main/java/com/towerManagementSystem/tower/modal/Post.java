@@ -10,7 +10,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Builder
 @Data
@@ -29,7 +28,7 @@ public class Post {
     @ElementCollection
     private List<String> images=new ArrayList<>();
     @ManyToOne
-    private User createdBy;
+    private Admin createdBy;
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

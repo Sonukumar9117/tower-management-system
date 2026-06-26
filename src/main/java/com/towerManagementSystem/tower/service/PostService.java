@@ -1,14 +1,13 @@
 package com.towerManagementSystem.tower.service;
 
-import com.towerManagementSystem.tower.dto.Resposne.Pagination;
-import com.towerManagementSystem.tower.dto.Resposne.PostResponse;
-import com.towerManagementSystem.tower.dto.Resposne.SuccessPostUpdateResponse;
-import com.towerManagementSystem.tower.dto.Resposne.UserResponseDto;
+import com.towerManagementSystem.tower.dto.Resposne.*;
 import com.towerManagementSystem.tower.dto.SuccessPostResponse;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.dto.request.PostDto;
 import com.towerManagementSystem.tower.dto.request.UpdatePostDto;
 import com.towerManagementSystem.tower.exception.CustomException;
+import com.towerManagementSystem.tower.mapper.PostMapper;
+import com.towerManagementSystem.tower.modal.Admin;
 import com.towerManagementSystem.tower.modal.Post;
 import com.towerManagementSystem.tower.modal.User;
 import com.towerManagementSystem.tower.respository.PostRepository;
@@ -35,38 +34,41 @@ import java.util.UUID;
 public class PostService {
     private final PostRepository postRepository;
     @Transactional
-    public SuccessResponse createPost(PostDto postDto){
+    public SuccessPostCreatedResponse createPost(PostDto postDto){
         List<MultipartFile> images=postDto.getImages();
         List<String>fileName=new ArrayList<>();
         User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+        assert user != null;
+        Admin admin=user.getAdmin();
         for(int i=0;i<images.size();i++){
             fileName.add(UUID.randomUUID()+".png");
         }
         Post post=Post.builder()
                 .title(postDto.getTitle())
+                .createdAt(LocalDateTime.now())
                 .description(postDto.getDescription())
                 .images(fileName)
-                .createdBy(user)
+                .createdBy(admin)
                 .build();
-        postRepository.save(post);
-        assert user != null;
-        List<Post>posts=user.getPosts();
+                postRepository.save(post);
+                List<Post>posts=admin.getPosts();
         posts.add(post);
-        user.setPosts(posts);
+        admin.setPosts(posts);
         for(int i=0;i<images.size();i++){
             UploadImage.uploadImage(images.get(i),fileName.get(i) );
         }
-        return SuccessResponse.builder()
-                .message("Post created successfully")
-                .status(HttpStatus.CREATED.value())
-                .success(true)
-                .timeStamp(LocalDateTime.now())
-                .build();
+        SuccessPostCreatedResponse successPostCreatedResponse=new SuccessPostCreatedResponse();
+             successPostCreatedResponse.setPost(PostMapper.toPostResponse(post));
+             successPostCreatedResponse.setMessage("Post created successfully");
+             successPostCreatedResponse.setTimeStamp(LocalDateTime.now());
+             successPostCreatedResponse.setSuccess(true);
+             successPostCreatedResponse.setStatus(HttpStatus.CREATED.value());
+        return successPostCreatedResponse;
     }
-    public SuccessPostResponse getPost(int page , int limit) {
-        Pageable paging=  PageRequest.of(page,limit, Sort.by("createdAt").ascending());
-        Page<Post> postPage=postRepository.findAll(paging);
 
+    public SuccessPostResponse getPost(int page , int limit) {
+        Pageable paging=  PageRequest.of(page,limit, Sort.by("createdAt").descending());
+        Page<Post> postPage=postRepository.findAll(paging);
         Pagination pagination=Pagination.builder()
                 .currentPage(postPage.getNumber())
                 .limit(postPage.getSize())
@@ -75,28 +77,7 @@ public class PostService {
         List<Post> post= postPage.getContent();
         List<PostResponse> postResponseList=new ArrayList<>();
         post.forEach( (post1 -> {
-            User user=post1.getCreatedBy();
-            UserResponseDto userResponseDto=UserResponseDto.builder()
-                    .id(user.getUserId())
-                    .email(user.getEmail())
-                    .role(user.getRole())
-                    .phone(user.getPhone())
-                    .image(UploadImage.generateImageUrl(user.getImage()))
-                    .build();
-            List<String>imageUrl=new ArrayList<>();
-            post1.getImages().forEach(imageName->{
-                imageUrl.add(UploadImage.generateImageUrl(imageName));
-            });
-            PostResponse postResponse=PostResponse.builder()
-                    .title(post1.getTitle())
-                    .description(post1.getDescription())
-                    .id(post1.getPostId())
-                    .images(imageUrl)
-                    .createdAt(post1.getCreatedAt())
-                    .updatedAt(post1.getUpdatedAt())
-                    .createdBy(userResponseDto)
-                    .build();
-            postResponseList.add(postResponse);
+            postResponseList.add(PostMapper.toPostResponse(post1));
         }));
         SuccessPostResponse successPostResponse=new SuccessPostResponse();
         successPostResponse.setPosts(postResponseList);
@@ -107,11 +88,11 @@ public class PostService {
         successPostResponse.setMessage("Post fetched successfully.");
         return successPostResponse;
     }
+
     public SuccessResponse deleteById(String  id) {
         Post post=postRepository.findById(id).orElseThrow(()->new UsernameNotFoundException("Post not found"));
-        User user=post.getCreatedBy();
+        Admin user= post.getCreatedBy();
         user.getPosts().remove(post);
-
         postRepository.save(post);
         postRepository.deleteById(id);
         return SuccessResponse.builder()
@@ -145,29 +126,8 @@ public class PostService {
           }
           post.setUpdatedAt(LocalDateTime.now());
       }
-      List<String> imageUrl=new ArrayList<>();
-      for(String fileName:post.getImages()){
-          imageUrl.add(UploadImage.generateImageUrl(fileName));
-      }
-      User user= post.getCreatedBy();
-      UserResponseDto userResponseDto=UserResponseDto.builder()
-              .role(user.getRole())
-              .phone(user.getPhone())
-              .email(user.getEmail())
-              .id(user.getUserId())
-              .image(UploadImage.generateImageUrl(user.getImage()))
-              .build();
-        PostResponse postResponse=PostResponse.builder()
-                .title(post.getTitle())
-                .description(post.getDescription())
-                .id(post.getPostId())
-                .images(imageUrl)
-                .createdAt(post.getCreatedAt())
-                .updatedAt(post.getUpdatedAt())
-                .createdBy(userResponseDto)
-                .build();
        SuccessPostUpdateResponse postUpdateResponse=new SuccessPostUpdateResponse();
-       postUpdateResponse.setPost(postResponse);
+       postUpdateResponse.setPost(PostMapper.toPostResponse(post));
        postUpdateResponse.setStatus(HttpStatus.OK.value());
        postUpdateResponse.setMessage("Post updated successfully");
        postUpdateResponse.setSuccess(true);

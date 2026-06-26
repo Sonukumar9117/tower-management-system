@@ -9,20 +9,22 @@ import com.towerManagementSystem.tower.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/post")
 public class PostController {
     private final PostService postService;
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create-post")
     public ResponseEntity<?>createPost(@ModelAttribute PostDto postDto){
         SuccessResponse successResponse=postService.createPost(postDto);
         return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'TENANT')")
     @GetMapping("/list")
     public ResponseEntity<?>getPost(@RequestParam (value = "page", defaultValue = "0") Integer page, @RequestParam(value = "limit", defaultValue = "20") Integer limit){
         SuccessPostResponse postResponse=postService.getPost(page, limit);
