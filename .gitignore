@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+google-services.json
+GoogleService-info.plist
+
