@@ -42,8 +42,8 @@ app-example
 /ios
 /android
 
-# google-services.json
-# GoogleService-Info.plist
+google-services.json
+GoogleService-Info.plist
 google-play-service-account.json
 vistatower.keystore
 yml_example.txt
