@@ -1,0 +1,60 @@
+JavaScript DOM Manipulation
+🔍 Selecting Elements
+document.getElementById('id') — Finds one element by its unique ID.
+
+document.querySelector('selector') — Finds the first element matching any CSS selector.
+
+document.querySelectorAll('selector') — Finds all elements matching a CSS selector (returns a NodeList).
+
+document.getElementsByClassName('class') — Finds elements by class name (returns a live HTMLCollection).
+
+document.getElementsByTagName('tag') — Finds elements by HTML tag name (like div or p). [1, 2, 3, 4, 5]
+
+✍️ Modifying Text & HTML
+element.textContent — Gets or sets the text inside an element (safe from XSS).
+
+element.innerHTML — Gets or sets the HTML markup inside an element.
+
+element.value — Gets or sets the current value of form inputs and textareas. [1, 2, 3, 4, 5]
+
+🎨 Managing Attributes & Styles
+element.setAttribute('attr', 'value') — Adds or updates an attribute (like src or href).
+
+element.getAttribute('attr') — Retrieves the value of a specific attribute.
+
+element.removeAttribute('attr') — Removes an attribute completely from the element.
+
+element.classList.add('class') — Adds one or more CSS classes.
+
+element.classList.remove('class') — Removes one or more CSS classes.
+
+element.classList.toggle('class') — Flips a class on or off depending on if it exists.
+
+element.style.property — Changes inline CSS styles directly (e.g., element.style.color = 'red'). [1, 2, 3, 4, 5]
+
+🛠️ Creating & Modifying Elements
+document.createElement('tag') — Creates a brand new HTML element node in memory.
+
+element.appendChild(newNode) — Inserts a node as the last child of a parent element.
+
+element.insertBefore(newNode, referenceNode) — Inserts a node before a specific sibling node.
+
+element.removeChild(childNode) — Removes a specific child node from the parent.
+
+element.remove() — Removes the element itself directly from the DOM.
+
+element.replaceChild(newNode, oldNode) — Swaps an existing child node with a new one. [1, 2, 3, 4, 5]
+
+⚡ Handling Events
+element.addEventListener('event', callback) — Attaches an event handler (like click or submit).
+
+element.removeEventListener('event', callback) — Removes a previously attached event handler. [1, 2, 3, 4]
+
+👪 Traversing the DOM
+element.parentElement — Gets the immediate parent node of the element.
+
+element.children — Gets a live list of the element's child HTML elements.
+
+element.nextElementSibling — Gets the next adjacent element at the same tree level.
+
+element.previousElementSibling — Gets the previous adjacent element at the same tree level.

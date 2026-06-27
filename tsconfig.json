@@ -1,0 +1,17 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+, "src/components/backArrowHeader.tsx", "src/screens/admin/adminHomePage.tsx", "src/screens/admin/addUser.tsx", "src/screens/admin/AdminComplaintLogs.tsx"  ]
+}
