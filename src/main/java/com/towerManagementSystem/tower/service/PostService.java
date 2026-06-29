@@ -1,5 +1,6 @@
 package com.towerManagementSystem.tower.service;
 
+import com.cloudinary.Cloudinary;
 import com.towerManagementSystem.tower.dto.Resposne.*;
 import com.towerManagementSystem.tower.dto.SuccessPostResponse;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
@@ -33,30 +34,30 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final Cloudinary cloudinary;
     @Transactional
     public SuccessPostCreatedResponse createPost(PostDto postDto){
-        List<MultipartFile> images=postDto.getImages();
-        List<String>fileName=new ArrayList<>();
+        List<String>images=new ArrayList<>();
         User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         assert user != null;
         Admin admin=user.getAdmin();
-        for(int i=0;i<images.size();i++){
-            fileName.add(UUID.randomUUID()+".png");
-        }
+
         Post post=Post.builder()
                 .title(postDto.getTitle())
                 .createdAt(LocalDateTime.now())
                 .description(postDto.getDescription())
-                .images(fileName)
                 .createdBy(admin)
                 .build();
+        for(MultipartFile multipartFile: postDto.getImages()){
+            images.add(UploadImage.uploadImageOnCloudinary(cloudinary,multipartFile));
+        }
+        post.setImages(images);
                 postRepository.save(post);
+
                 List<Post>posts=admin.getPosts();
         posts.add(post);
         admin.setPosts(posts);
-        for(int i=0;i<images.size();i++){
-            UploadImage.uploadImage(images.get(i),fileName.get(i) );
-        }
+
         SuccessPostCreatedResponse successPostCreatedResponse=new SuccessPostCreatedResponse();
              successPostCreatedResponse.setPost(PostMapper.toPostResponse(post));
              successPostCreatedResponse.setMessage("Post created successfully");
@@ -116,14 +117,11 @@ public class PostService {
           post.setUpdatedAt(LocalDateTime.now());
       }
       if(postDto.getImages()!=null && !postDto.getImages().isEmpty()){
-          List<String>fileName=new ArrayList<>();
-          for(int i=0;i<postDto.getImages().size();i++){
-              fileName.add(UUID.randomUUID()+".png");
+          List<String>images=new ArrayList<>();
+          for(MultipartFile file:postDto.getImages()){
+              images.add(UploadImage.uploadImageOnCloudinary(cloudinary,file));
           }
-          post.setImages(fileName);
-          for(int i=0;i<fileName.size();i++){
-              UploadImage.uploadImage(postDto.getImages().get(i),fileName.get(i));
-          }
+          post.setImages(images);
           post.setUpdatedAt(LocalDateTime.now());
       }
        SuccessPostUpdateResponse postUpdateResponse=new SuccessPostUpdateResponse();

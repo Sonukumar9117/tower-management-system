@@ -12,10 +12,6 @@ import java.util.List;
 
 public class PostMapper {
     public static PostResponse toPostResponse(Post post){
-        List<String> imageUrl=new ArrayList<>();
-        post.getImages().forEach(imageName->{
-            imageUrl.add(UploadImage.generateImageUrl(imageName));
-        });
         Admin admin= post.getCreatedBy();
         User user=admin.getUser();
         UserResponseDto userResponseDto=UserResponseDto.builder()
@@ -24,13 +20,13 @@ public class PostMapper {
                 .email(user.getEmail())
                 .role(user.getRole())
                 .phone(user.getPhone())
-                .image(UploadImage.generateImageUrl(user.getImage()))
+                .image(user.getImage())
                 .build();
         return PostResponse.builder()
                 .title(post.getTitle())
                 .description(post.getDescription())
                 .id(post.getPostId())
-                .images(imageUrl)
+                .images(post.getImages())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .createdBy(userResponseDto)
