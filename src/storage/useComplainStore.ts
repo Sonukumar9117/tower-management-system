@@ -78,7 +78,6 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
         technicianId,
       });
       fetchComplaints();
-      Toast.show({type: 'success', text1: res?.data?.message});
     } catch (error) {
       const err = error as AxiosError;
 

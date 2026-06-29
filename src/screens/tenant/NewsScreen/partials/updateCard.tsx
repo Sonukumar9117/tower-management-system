@@ -36,7 +36,7 @@ const UpdateCard = React.memo(({item}: any) => {
   const [openingImage, setOpeningImage] = useState<number>(0);
   const [imageViewLink, setImageViewLink] = useState([{uri: ''}]);
   const {width} = useWindowDimensions();
-  const {name, image} = item?.postedBy ?? {};
+  const {name, image} = item?.createdBy ?? {};
 
   return (
     <View style={styles.cardWrapper}>
@@ -63,7 +63,7 @@ const UpdateCard = React.memo(({item}: any) => {
                 {formatTimeDifference(item?.createdAt)}
               </Text>
             </View>
-            {role == 'Admin' ? (
+            {role == 'ADMIN' ? (
               <TouchableOpacity onPress={() => setBtnVisible(prev => !prev)}>
                 {!isBtnVisible ? (
                   <Icon name="more-vert" size={24} color={Colors.black} />
@@ -77,23 +77,23 @@ const UpdateCard = React.memo(({item}: any) => {
           {/* Title */}
           <Text style={styles.title}>{item?.title}</Text>
 
-          {item?.image?.length > 0 ? (
+          {item?.images?.length > 0 ? (
             <ScrollView
               horizontal
               style={{height: 200}}
               contentContainerStyle={{gap: 10}}
               showsHorizontalScrollIndicator={false}
-              snapToInterval={width - (item?.image?.length == 1 ? 55 : 80)} // width + margin
+              snapToInterval={width - (item?.images?.length == 1 ? 55 : 80)} // width + margin
               decelerationRate="fast"
               snapToAlignment="start">
-              {item?.image?.map((uri: string, index: number) => (
+              {item?.images?.map((uri: string, index: number) => (
                 <Pressable
                   // style={styles.photoTile}
                   onPress={() => {
                     setOpeningImage(index);
                     setImageViewVisible(true);
                     const arrayImages: {uri: string}[] = [];
-                    item?.image?.forEach(element => {
+                    item?.images?.forEach(element => {
                       arrayImages.push({uri: element});
                     });
                     setImageViewLink(arrayImages);
@@ -116,7 +116,7 @@ const UpdateCard = React.memo(({item}: any) => {
                     }}
                     style={[
                       styles.image,
-                      {width: width - (item?.image?.length == 1 ? 55 : 80)},
+                      {width: width - (item?.images?.length == 1 ? 55 : 80)},
                     ]}
                   />
                 </Pressable>
@@ -176,7 +176,7 @@ const UpdateCard = React.memo(({item}: any) => {
           onCancel={() => setVisible(false)}
           onOk={() => {
             setVisible(false);
-            deletePost(item?._id);
+            deletePost(item?.id);
           }}
         />
       </Modal>

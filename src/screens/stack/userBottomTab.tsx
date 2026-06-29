@@ -61,14 +61,14 @@ const UserBottomTabs = () => {
   const inactiveColor = Colors.inactiveTab;
   const activeColor = Colors.bloodRed;
   const currentScreens =
-    role == 'Tenant'
+    role == 'TENANT'
       ? tenantScreens
-      : role == 'Admin'
+      : role == 'ADMIN'
       ? adminScreens
       : technicianScreens;
   return (
     <Tab.Navigator
-      initialRouteName={role == 'Technician' ? 'Complaints' : 'News'}
+      initialRouteName={role == 'TECHNICIAN' ? 'Complaints' : 'News'}
       screenOptions={{
         headerShown: true,
         header: () => <CustomHeader title={'Vista Business Tower'} />,
@@ -165,7 +165,7 @@ const UserBottomTabs = () => {
                       ? 'rgba(254,242,242,0.5)'
                       : 'transparent',
                     minWidth:
-                      role != 'Admin' ? moderateScale(90) : moderateScale(40),
+                      role != 'ADMIN' ? moderateScale(90) : moderateScale(40),
                   },
                 ]}>
                 {iconMap[route.name as keyof typeof iconMap]}

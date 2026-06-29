@@ -6,7 +6,7 @@ import Toast from 'react-native-toast-message';
 import {navigationRef} from '@/App';
 import {useUser} from './store';
 
-const PAGE_LIMIT = 20;
+const PAGE_LIMIT = 5;
 
 interface PostState {
   posts: any[];
@@ -40,8 +40,8 @@ interface PostState {
 
 export const usePostStore = create<PostState>((set, get) => ({
   posts: [],
-  currentPage: 1,
-  totalPages: 1,
+  currentPage: 0,
+  totalPages:0,
   totalPosts: 0,
   isCreatingPost: false,
   isLoading: false,
@@ -49,7 +49,7 @@ export const usePostStore = create<PostState>((set, get) => ({
   deleting: {isDeleting: false, id: ''},
   error: null,
 
-  fetchPosts: async (page = 1) => {
+  fetchPosts: async (page = 0) => {
     const {isLoading, posts: prevPost} = get();
     if (isLoading) return;
 
@@ -61,18 +61,18 @@ export const usePostStore = create<PostState>((set, get) => ({
       );
 
 
-      const data = res?.data;
-      const {unreadCount, pagination, posts: post} = data?.data;
-      const posts: any[] =page>1?[...prevPost,...post]: [...post];
-      const {total, page: currentPage, totalPages} = pagination;
+       const data = res?.data;
+      const {posts:post, pagination}=data
+      // const {unreadCount, pagination, posts: post} = data?.data;
+      const posts: any[] =page>0?[...prevPost,...post]: [...post];
+      // const {total, page: currentPage, totalPages} = pagination;
       set({
         posts,
-        currentPage: currentPage,
-        totalPages,
-        totalPosts: total,
+        currentPage: pagination?.currentPage??0,
+        totalPages:pagination.totalPage-1,
         isLoading: false,
       });
-      useUser.setState({unreadNotificationCount: unreadCount});
+      // useUser.setState({unreadNotificationCount: unreadCount});
     } catch (err) {
       const error = err as AxiosError<{message: string}>;
       const message =
@@ -80,6 +80,9 @@ export const usePostStore = create<PostState>((set, get) => ({
         error.message ??
         'Something went wrong';
       set({error: {success: false, message}, isLoading: false});
+    }
+    finally{     
+      set({isLoading:false})
     }
   },
 
@@ -89,22 +92,26 @@ export const usePostStore = create<PostState>((set, get) => ({
     try {
       set({isRefreshing: true, error: null});
       const res = await httpClient.get(
-        `${apiEndPoints.GET_POST}?page=${1}&limit=${PAGE_LIMIT}`,
+        `${apiEndPoints.GET_POST}?page=${0}&limit=${PAGE_LIMIT}`,
       );
-
+     console.log(res);
+     
       const data = res?.data;
-      const {unreadCount, pagination, posts: post} = data?.data;
+      const {posts:post, pagination}=data
+      // const {unreadCount, pagination, posts: post} = data?.data;
       const posts: any[] = [...post];
-      const {total, page: currentPage, totalPages} = pagination;
+      // const {total, page: currentPage, totalPages} = pagination;
       set({
         posts,
-        currentPage: currentPage,
-        totalPages,
-        totalPosts: total,
+        currentPage:pagination?.currentPage??0,
+        totalPages:pagination.totalPage-1,
+        totalPosts: 0,
         isRefreshing: false,
       });
-      useUser.setState({unreadNotificationCount: unreadCount});
+      // useUser.setState({unreadNotificationCount: unreadCount});
     } catch (err: any) {
+      console.log(err);
+      
       const error = err as AxiosError;
 
       Toast.show({
@@ -114,6 +121,11 @@ export const usePostStore = create<PostState>((set, get) => ({
       const message =
         err?.response?.data?.message ?? err?.message ?? 'Something went wrong';
       set({error: message, isRefreshing: false});
+    }
+    finally{
+      set({
+        isRefreshing:false
+      })
     }
   },
   goToPage: page => {
@@ -142,7 +154,7 @@ export const usePostStore = create<PostState>((set, get) => ({
       formData.append('description', description);
 
       image.forEach((img, index) => {
-        formData.append('image', {
+        formData.append('images', {
           uri: img.uri,
           type: img.type || 'image/jpeg',
           name: img.name || `photo_${index}.jpg`,
@@ -190,7 +202,7 @@ export const usePostStore = create<PostState>((set, get) => ({
       formData.append('title', title);
       formData.append('description', description);
       image.forEach((img, index) => {
-        formData.append('image', {
+        formData.append('images', {
           uri: img.uri,
           type: img.type || 'image/jpeg',
           name: img.name || `photo_${index}.jpg`,
@@ -208,7 +220,7 @@ export const usePostStore = create<PostState>((set, get) => ({
         type: 'success',
         text1: res?.data?.message ?? 'Post Edited Successfully.',
       });
-      const removedPost = posts.filter(post => post?._id != id);
+      const removedPost = posts.filter(post => post?.id != id);
       set(prev => ({
         ...prev,
         posts: [...removedPost],
@@ -217,6 +229,8 @@ export const usePostStore = create<PostState>((set, get) => ({
       navigationRef.goBack();
     } catch (err) {
       const error = err as AxiosError<{message: string}>;
+      console.log(error?.response);
+      
       const message =
         error?.response?.data?.message?.toString() ?? 'Failed to Edit post';
       Toast.show({
@@ -238,7 +252,7 @@ export const usePostStore = create<PostState>((set, get) => ({
         type: 'success',
         text1: res?.data?.message,
       });
-      const newPost = posts.filter(post => post?._id != id);
+      const newPost = posts.filter(post => post?.id != id);
       set({deleting: {isDeleting: false, id: ''}, posts: newPost, error: null});
     } catch (err) {
       const error = err as AxiosError;

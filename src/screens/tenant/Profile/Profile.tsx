@@ -44,9 +44,9 @@ const Profile = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
         <ScreenHeader
-          heading={role == 'Admin' ? 'Admin Profile' : 'Your Profile'}
+          heading={role == 'ADMIN' ? 'Admin Profile' : 'Your Profile'}
           subHeading={
-            role == 'admin'
+            role == 'ADMIN'
               ? 'Official administrator and property management contact details'
               : 'Manage your accounts'
           }
@@ -62,10 +62,10 @@ const Profile = () => {
             />
             {
               <TextComp
-                text={role == 'Tenant' ? user?.company : user?.name}
+                text={role == 'TENANT' ? user?.company : user?.name}
                 style={[
                   styles.companyNameTxt,
-                  {paddingTop: role == 'Admin' ? 10 : 0},
+                  {paddingTop: role == 'ADMIN' ? 10 : 0},
                 ]}
               />
             }
@@ -79,7 +79,7 @@ const Profile = () => {
                 </View>
                 {
                   <>
-                    {role == 'Admin' ? (
+                    {role == 'ADMIN' ? (
                       <View
                         style={styles.adminEmailContainer}>
                         <TextComp
@@ -92,7 +92,7 @@ const Profile = () => {
                         />
                       </View>
                     ) : null}
-                    {role == 'Admin' ? (
+                    {role == 'ADMIN' ? (
                       <View
                         style={styles.adminMobileContainer}>
                         <TextComp
@@ -100,7 +100,7 @@ const Profile = () => {
                           style={styles.adminMobileLabel}
                         />
                         <TextComp
-                          text={'7877867867'}
+                          text={user?.mobileNumber??""}
                           style={styles.adminMobileTxt}
                         />
                       </View>
@@ -110,33 +110,33 @@ const Profile = () => {
               </>
             }
           </View>
-          {role == 'Technician' ? (
+          {role == 'TECHNICIAN' ? (
             <View style={[styles.detailItem, {marginTop: 20}]}>
               <TextComp
-                text={role == 'Technician' ? 'Skill' : 'Tower'}
+                text={role == 'TECHNICIAN' ? 'Skill' : 'Tower'}
                 style={styles.detailLabel}
               />
               <TextComp
                 text={
-                  role == 'Technician' ? capitalizeWords(user?.skill ?? '') : ''
+                  role == 'TECHNICIAN' ? capitalizeWords(user?.skill ?? '') : ''
                 }
                 style={styles.detailValue}
               />
               <View style={[styles.divider, {marginTop: verticalScale(6)}]} />
             </View>
           ) : null}
-          {role != 'Admin' ? (
+          {role != 'ADMIN' ? (
             <>
               <View style={styles.detailsGrid}>
-                {role != 'Technician' ? (
+                {role != 'TECHNICIAN' ? (
                   <View style={styles.detailItem}>
                     <TextComp text={'Name'} style={styles.detailLabel} />
                     <TextComp text={user?.name} style={styles.detailValue} />
                   </View>
                 ) : null}
-                {role != 'Technician' ? <View style={styles.divider} /> : null}
+                {role != 'TECHNICIAN' ? <View style={styles.divider} /> : null}
 
-                {role != 'Technician' ? (
+                {role != 'TECHNICIAN' ? (
                   <>
                     <View style={styles.detailItem}>
                       <TextComp text={'Floor'} style={styles.detailLabel} />
@@ -149,7 +149,7 @@ const Profile = () => {
                 <View
                   style={[
                     styles.detailRow,
-                    {flexDirection: role != 'Technician' ? 'row' : 'row'},
+                    {flexDirection: role != 'TECHNICIAN' ? 'row' : 'row'},
                   ]}>
                   <View style={styles.detailItem}>
                     <TextComp text="Phone number" style={styles.detailLabel} />

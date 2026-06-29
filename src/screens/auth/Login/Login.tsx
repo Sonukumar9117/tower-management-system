@@ -113,16 +113,16 @@ const Login = () => {
         user: responseUser,
         unreadNotificationCount,
         token,
-      } = response?.data?.data;
+      } = response?.data;
 
       const {profileCompleted, role} = responseUser;
 
       myLocalStorage.set('role', role ?? '');
       myLocalStorage.set('authToken', token ?? '');
       myLocalStorage.set('profile', profileCompleted ?? '');
-      myLocalStorage.set('name', response?.data?.user?.name ?? '');
-      myLocalStorage.set('userid', response?.data?.user?._id ?? '');
-      myLocalStorage.set('company', response?.data?.user?.companyName ?? '');
+      myLocalStorage.set('name', responseUser?.name ?? '');
+      myLocalStorage.set('userid', responseUser?.id ?? '');
+      myLocalStorage.set('company', responseUser?.id?.companyName ?? '');
       const {companyName, floor} = responseUser?.tenantProfile ?? {};
       const {designation} = responseUser?.technicianProfile ?? {};
 
@@ -133,7 +133,7 @@ const Login = () => {
         building: responseUser?.building,
         fcmToken: responseUser?.fcmToken,
         company: companyName,
-        mobileNumber: responseUser?.mobileNumber,
+        mobileNumber: responseUser?.phone,
         name: responseUser?.name,
         floor: floor,
         role: role,
@@ -156,7 +156,10 @@ const Login = () => {
       requestNotificationPermission();
     } catch (error) {
       const axiosError = error as AxiosError;
-
+      console.log(error);
+      
+      console.log(axiosError?.message);
+      
       setLoader(false);
 
       setErrMsg(prev => ({

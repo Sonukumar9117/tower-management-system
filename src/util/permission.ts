@@ -44,7 +44,7 @@ export async function getFcmToken(): Promise<string | null> {
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (!enabled) {
-    // console.log('Permission denied');
+    console.log('Permission denied');
     return null;
   }
 

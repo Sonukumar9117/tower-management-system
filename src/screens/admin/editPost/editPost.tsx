@@ -39,7 +39,7 @@ import {
 } from '@/src/util/permission';
 const EditPost = () => {
   const {params} = useRoute();
-  const {title, description, _id} = params?.post ?? {};
+  const {title, description, id} = params?.post ?? {};
   const {editPost, isCreatingPost, error} = usePostStore();
   const [complaint, setComplaint] = useState<{
     title: string;
@@ -169,7 +169,7 @@ const EditPost = () => {
     }
 
     await editPost(
-      _id,
+       id,
       complaint.title,
       complaint.description,
       complaint.image,

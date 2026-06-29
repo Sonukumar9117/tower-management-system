@@ -1,1 +1,1 @@
-export const baseUrl = 'https://vista-tower-backend.onrender.com/api/';
+export const baseUrl = 'https://tower-management-system.onrender.com/api/v1/';

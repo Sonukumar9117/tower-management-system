@@ -78,7 +78,7 @@ const NewsScreen = () => {
           showsVerticalScrollIndicator={false}
         />
       )}
-      {role == 'Admin' ? (
+      {role == 'ADMIN' ? (
         <TouchableOpacity
           style={styles.floatingBtn}
           onPress={() => {
