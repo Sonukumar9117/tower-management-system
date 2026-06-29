@@ -198,7 +198,8 @@ public class AuthService {
            User user=(User) authentication.getPrincipal();
            assert user != null;
            List<String> fcmToken=user.getFcmTokens();
-           fcmToken.add(loginRequestDto.getFcmToken());
+           System.out.println(fcmToken);
+//           fcmToken.add(loginRequestDto.getFcmToken());
            user.setFcmTokens(fcmToken);
            successLoginResponse.setToken(jwtService.generateToken(user));
            successLoginResponse.setUser(UserMapper.toUserResponseDto(user));
