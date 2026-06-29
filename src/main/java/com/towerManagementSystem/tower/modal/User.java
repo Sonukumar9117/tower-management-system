@@ -42,7 +42,7 @@ public class User implements UserDetails {
     private UserRole role;
     @Column(nullable = false)
     private String password;
-    private final List<String> fcmTokens=new ArrayList<>();
+    private  List<String> fcmTokens=new ArrayList<>();
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

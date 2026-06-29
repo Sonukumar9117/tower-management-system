@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -196,6 +197,9 @@ public class AuthService {
            successLoginResponse.setStatus(HttpStatus.OK.value());
            User user=(User) authentication.getPrincipal();
            assert user != null;
+           List<String> fcmToken=user.getFcmTokens();
+           fcmToken.add(loginRequestDto.getFcmToken());
+           user.setFcmTokens(fcmToken);
            successLoginResponse.setToken(jwtService.generateToken(user));
            successLoginResponse.setUser(UserMapper.toUserResponseDto(user));
           return successLoginResponse;

@@ -16,4 +16,6 @@ public class LoginRequestDto {
     private String email;
     @NotNull(message = "Password is required field.")
     private  String password;
+    @NotNull(message = "FCM token is required field")
+    private String fcmToken;
 }
