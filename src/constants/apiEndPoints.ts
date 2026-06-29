@@ -5,7 +5,7 @@ export const apiEndPoints={
     "GET_POST":"post/list",
     "CREATE_POST":"post/create-post",
     "DELETE_POST":"post",
-    "GET_COMPLAINT_LIST":"complaint",
+    "GET_COMPLAINT_LIST":"complaint/get-complaint",
     "CREATE_COMPLAINT":"complaint",
     "DELETE_USER_BY_ID":'user/users',
     "CREATE_USER":'user/adduser',
@@ -21,5 +21,5 @@ export const apiEndPoints={
      "UPDATE_TECHNICIAN_STATUS":'complaint/technician-status',
      "ASSIGN_TECHNICIAN":'complaint/assign-technician',
      "FIND_COMPLAINT_BY_ID":'complaint',
-     "COPLAINT_LIST_STATUS":'complaint/status'
+     "COPLAINT_LIST_STATUS":'complaint'
 }

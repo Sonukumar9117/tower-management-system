@@ -95,7 +95,7 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
     }
   },
 
-  fetchComplaints: async (page = 1, status = '') => {
+  fetchComplaints: async (page = 0, status = '') => {
     const {isLoading} = get();
     if (isLoading) return;
 
@@ -105,8 +105,11 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
         ? `${apiEndPoints.COPLAINT_LIST_STATUS}/${status}`
         : apiEndPoints.GET_COMPLAINT_LIST;
       const res = await httpClient.get(`${api}?page=${page}&limit=20`);
+   
 
-      const currentComplaints = res?.data?.data?.complaints ?? [];
+      console.log(res,"Resposne after fetching complaint list");
+      
+      const currentComplaints = res?.data?.complaints ?? [];
 
       set({
         numberOfPendingComplaint: res?.data?.data?.counts?.pending ?? 0,
@@ -125,7 +128,7 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
         isRefreshing: false,
         loadingNextPage: false,
         complaints:
-          page === 1
+          page === 0
             ? [...currentComplaints]
             : [...prev.complaints, ...currentComplaints],
         currentPage: currPage,
