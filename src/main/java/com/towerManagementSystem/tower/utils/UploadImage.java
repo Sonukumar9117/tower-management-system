@@ -1,5 +1,7 @@
 package com.towerManagementSystem.tower.utils;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.towerManagementSystem.tower.exception.ImageException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -9,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 public class UploadImage {
 
@@ -34,6 +37,17 @@ public class UploadImage {
                 .path(imageName)
                 .build()
                 .toString();
+    }
+    public static String uploadImageOnCloudinary(Cloudinary cloudinary, MultipartFile file){
+        try{
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(
+                    file.getBytes(),
+                    ObjectUtils.emptyMap()
+            );
+            return uploadResult.get("secure_url").toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     public boolean saveImageLocally(){
         return true;

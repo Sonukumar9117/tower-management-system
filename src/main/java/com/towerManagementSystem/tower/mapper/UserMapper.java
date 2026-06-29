@@ -12,9 +12,7 @@ public class UserMapper {
                 .phone(user.getPhone())
                 .role(user.getRole())
                 .name(user.getName())
-                .image(
-                        UploadImage.generateImageUrl(user.getImage())
-                )
+                .image(user.getImage())
                 .build();
     }
 }

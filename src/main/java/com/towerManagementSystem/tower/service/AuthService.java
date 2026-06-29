@@ -1,5 +1,7 @@
 package com.towerManagementSystem.tower.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.LoginRequestDto;
 import com.towerManagementSystem.tower.dto.Resposne.SuccessLoginResponse;
@@ -29,7 +31,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -41,7 +45,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
-
+    private final Cloudinary cloudinary;
     public SuccessResponse signup(SignupRequestDto signupRequestDto){
         if (!signupRequestDto.getConfirmPassword().equals(signupRequestDto.getPassword())){
             throw new CustomException("Confirm password doesn't match");
@@ -65,14 +69,15 @@ public class AuthService {
                .name(signupRequestDto.getName())
                .unreadNotificationCount(0L)
                .role(signupRequestDto.getRole())
-                .image(currentFileName)
+//                .image(currentFileName)
                 .password(passwordEncoder.encode(signupRequestDto.getPassword()))
                 .build();
            Admin admin=new Admin();
            admin.setUser(user);
            user.setAdmin(admin);
+           user.setImage(UploadImage.uploadImageOnCloudinary(cloudinary,signupRequestDto.getImage()));
         userRepository.save(user);
-        UploadImage.uploadImage(signupRequestDto.getImage(), currentFileName);
+
 
         return SuccessResponse.builder()
                 .status(HttpStatus.CREATED.value())
@@ -94,7 +99,6 @@ public class AuthService {
         else if(userPhone!=null) {
             throw new CustomException("Phone number already registered.");
         }
-            String currentFileName= UUID.randomUUID() +".png";
             Technician technician=new Technician();
            technician.setExperience(registerTechnicianDto.getExperience());
            technician.setSkill(registerTechnicianDto.getSkill());
@@ -103,17 +107,16 @@ public class AuthService {
                 .name(registerTechnicianDto.getName())
                 .phone(registerTechnicianDto.getPhone())
                 .email(registerTechnicianDto.getEmail())
-                .image(currentFileName)
+                .image(UploadImage.uploadImageOnCloudinary(cloudinary, registerTechnicianDto.getImage()))
                 .password(passwordEncoder.encode(registerTechnicianDto.getPassword()))
                 .role(UserRole.TECHNICIAN)
                         .build();
-                UploadImage.uploadImage(registerTechnicianDto.getImage(), currentFileName);
             technician.setUser(user);
            user.setTechnician(technician);
            User savedUser= userRepository.save(user);
         TechnicianResponse technicianResponse=new TechnicianResponse();
         technicianResponse.setName(savedUser.getName());
-        technicianResponse.setImage(UploadImage.generateImageUrl(user.getImage()));
+        technicianResponse.setImage(user.getImage());
         technicianResponse.setEmail(savedUser.getEmail());
         technicianResponse.setPhone(user.getPhone());
         technicianResponse.setId(user.getUserId());
@@ -139,34 +142,25 @@ public class AuthService {
         else if(userPhone!=null) {
             throw new CustomException("Phone number already registered.");
         }
-        String currentFileName= UUID.randomUUID() +".png";
         Tenant tenant=new Tenant();
         tenant.setBuilding(registerTenantDto.getBuilding());
         tenant.setFloor(registerTenantDto.getFloor());
         tenant.setCompanyName(registerTenantDto.getCompanyName());
+
+
         User user=User.builder()
                 .unreadNotificationCount(0L)
                 .name(registerTenantDto.getName())
                 .phone(registerTenantDto.getPhone())
                 .email(registerTenantDto.getEmail())
-                .image(currentFileName)
                 .password(passwordEncoder.encode(registerTenantDto.getPassword()))
                 .role(UserRole.TENANT)
                 .build();
-        UploadImage.uploadImage(registerTenantDto.getImage(), currentFileName);
+        user.setImage(UploadImage.uploadImageOnCloudinary(cloudinary,registerTenantDto.getImage()));
         tenant.setUser(user);
         user.setTenant(tenant);
         User savedUser=userRepository.save(user);
-        TenantResponse tenantResponse=new TenantResponse();
-        tenantResponse.setName(savedUser.getName());
-        tenantResponse.setImage(UploadImage.generateImageUrl(user.getImage()));
-        tenantResponse.setEmail(savedUser.getEmail());
-        tenantResponse.setPhone(user.getPhone());
-        tenantResponse.setId(user.getUserId());
-        tenantResponse.setFloor(user.getTenant().getFloor());
-        tenantResponse.setCompanyName(user.getTenant().getCompanyName());
-        tenantResponse.setBuilding(user.getTenant().getBuilding());
-        tenantResponse.setRole(user.getRole());
+        TenantResponse tenantResponse = getTenantResponse(savedUser, user);
         SuccessTenantCreatedResponse response=new SuccessTenantCreatedResponse();
         response.setUser(tenantResponse);
         response.setStatus(HttpStatus.CREATED.value());
@@ -175,6 +169,21 @@ public class AuthService {
         response.setTimeStamp(LocalDateTime.now());
         return response;
     }
+
+    private static TenantResponse getTenantResponse(User savedUser, User user) {
+        TenantResponse tenantResponse=new TenantResponse();
+        tenantResponse.setName(savedUser.getName());
+        tenantResponse.setImage(user.getImage());
+        tenantResponse.setEmail(savedUser.getEmail());
+        tenantResponse.setPhone(user.getPhone());
+        tenantResponse.setId(user.getUserId());
+        tenantResponse.setFloor(user.getTenant().getFloor());
+        tenantResponse.setCompanyName(user.getTenant().getCompanyName());
+        tenantResponse.setBuilding(user.getTenant().getBuilding());
+        tenantResponse.setRole(user.getRole());
+        return tenantResponse;
+    }
+
     public SuccessLoginResponse login(LoginRequestDto loginRequestDto){
         UserDetails userDetails= userDetailsService.loadUserByUsername(loginRequestDto.getEmail());
         UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userDetails,loginRequestDto.getPassword(),null);
