@@ -31,13 +31,11 @@ public class Complaint {
     private Integer daysFacingIssue;
     @Column(nullable = false)
     private String buildingName;
-    @ElementCollection
     private List<String> images=new ArrayList<>();
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     @ManyToOne
     @JoinColumn(name="user_id")
     private Tenant createdBy;

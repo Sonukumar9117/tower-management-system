@@ -14,6 +14,8 @@ public class Technician {
     private String id;
     @Column(nullable = false)
     private String skill;
+    @Column(nullable = false)
+    private Integer experience;
     @OneToOne
     @MapsId
     private User user;

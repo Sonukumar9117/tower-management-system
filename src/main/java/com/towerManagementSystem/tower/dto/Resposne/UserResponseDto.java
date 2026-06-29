@@ -1,13 +1,13 @@
 package com.towerManagementSystem.tower.dto.Resposne;
 
 import com.towerManagementSystem.tower.domain.UserRole;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserResponseDto {
     private String id;
     private String email;
@@ -15,5 +15,4 @@ public class UserResponseDto {
     private  String phone;
     private String image;
     private UserRole role;
-
 }

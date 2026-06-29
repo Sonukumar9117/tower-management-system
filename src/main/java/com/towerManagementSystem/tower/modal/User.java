@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,7 +42,6 @@ public class User implements UserDetails {
     private UserRole role;
     @Column(nullable = false)
     private String password;
-    @ElementCollection(fetch = FetchType.EAGER)
     private final List<String> fcmTokens=new ArrayList<>();
     @CreationTimestamp
     @Column(updatable = false)
@@ -50,15 +50,22 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
+    @JsonIgnore
     private Tenant tenant;
     @OneToOne(mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
+    @JsonIgnore
     private Admin admin;
     @OneToOne(mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
+    @JsonIgnore
     private Technician technician;
+    @Column(nullable = false)
+
+    private Long unreadNotificationCount;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_"+this.role));

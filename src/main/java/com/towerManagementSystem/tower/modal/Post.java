@@ -25,7 +25,6 @@ public class Post {
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
-    @ElementCollection
     private List<String> images=new ArrayList<>();
     @ManyToOne
     private Admin createdBy;

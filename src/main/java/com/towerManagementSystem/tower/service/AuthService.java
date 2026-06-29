@@ -3,7 +3,13 @@ package com.towerManagementSystem.tower.service;
 import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.LoginRequestDto;
 import com.towerManagementSystem.tower.dto.Resposne.SuccessLoginResponse;
-import com.towerManagementSystem.tower.dto.SignupRequestDto;
+import com.towerManagementSystem.tower.dto.Resposne.TechnicianResponse;
+import com.towerManagementSystem.tower.dto.Resposne.TenantResponse;
+import com.towerManagementSystem.tower.dto.SuccessTechnicianCreatedResponse;
+import com.towerManagementSystem.tower.dto.SuccessTenantCreatedResponse;
+import com.towerManagementSystem.tower.dto.request.RegisterTechnicianDto;
+import com.towerManagementSystem.tower.dto.request.RegisterTenantDto;
+import com.towerManagementSystem.tower.dto.request.SignupRequestDto;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.exception.CustomException;
 import com.towerManagementSystem.tower.mapper.UserMapper;
@@ -53,31 +59,21 @@ public class AuthService {
             throw new CustomException("Phone number already registered.");
         }
         String currentFileName= UUID.randomUUID() +".png";
-       User user=  User.builder()
+       User user= User.builder()
                .phone(signupRequestDto.getPhone())
                 .email(signupRequestDto.getEmail())
                .name(signupRequestDto.getName())
+               .unreadNotificationCount(0L)
                .role(signupRequestDto.getRole())
                 .image(currentFileName)
                 .password(passwordEncoder.encode(signupRequestDto.getPassword()))
                 .build();
-       if(user.getRole()== UserRole.ADMIN){
            Admin admin=new Admin();
            admin.setUser(user);
            user.setAdmin(admin);
-       }
-       else if(user.getRole()==UserRole.TENANT){
-           Tenant tenant=new Tenant();
-           tenant.setUser(user);
-           user.setTenant(tenant);
-       }
-       else if(user.getRole()==UserRole.TECHNICIAN){
-           Technician technician=new Technician();
-           technician.setUser(user);
-           user.setTechnician(technician);
-       }
-        UploadImage.uploadImage(signupRequestDto.getImage(), currentFileName);
         userRepository.save(user);
+        UploadImage.uploadImage(signupRequestDto.getImage(), currentFileName);
+
         return SuccessResponse.builder()
                 .status(HttpStatus.CREATED.value())
                 .message("User signup successfully")
@@ -86,6 +82,99 @@ public class AuthService {
                 build();
     }
 
+    public SuccessResponse registerTechnician(RegisterTechnicianDto registerTechnicianDto){
+        User userEmail=userRepository.findByEmail(registerTechnicianDto.getEmail()).orElse(null);
+        User userPhone=userRepository.findByPhone(registerTechnicianDto.getPhone()).orElse(null);
+        if(userEmail!=null && userPhone!=null){
+            throw new CustomException("Email and phone number already registered.");
+        }
+        else if(userEmail!=null){
+            throw new CustomException("Email already registered.");
+        }
+        else if(userPhone!=null) {
+            throw new CustomException("Phone number already registered.");
+        }
+            String currentFileName= UUID.randomUUID() +".png";
+            Technician technician=new Technician();
+           technician.setExperience(registerTechnicianDto.getExperience());
+           technician.setSkill(registerTechnicianDto.getSkill());
+        User user=User.builder()
+                .unreadNotificationCount(0L)
+                .name(registerTechnicianDto.getName())
+                .phone(registerTechnicianDto.getPhone())
+                .email(registerTechnicianDto.getEmail())
+                .image(currentFileName)
+                .password(passwordEncoder.encode(registerTechnicianDto.getPassword()))
+                .role(UserRole.TECHNICIAN)
+                        .build();
+                UploadImage.uploadImage(registerTechnicianDto.getImage(), currentFileName);
+            technician.setUser(user);
+           user.setTechnician(technician);
+           User savedUser= userRepository.save(user);
+        TechnicianResponse technicianResponse=new TechnicianResponse();
+        technicianResponse.setName(savedUser.getName());
+        technicianResponse.setImage(UploadImage.generateImageUrl(user.getImage()));
+        technicianResponse.setEmail(savedUser.getEmail());
+        technicianResponse.setPhone(user.getPhone());
+        technicianResponse.setId(user.getUserId());
+        technicianResponse.setRole(user.getRole());
+        technicianResponse.setSkill(savedUser.getTechnician().getSkill());
+        SuccessTechnicianCreatedResponse response=new SuccessTechnicianCreatedResponse();
+        response.setUser(technicianResponse);
+        response.setStatus(HttpStatus.CREATED.value());
+        response.setMessage("Tenant added successfully");
+        response.setSuccess(true);
+        response.setTimeStamp(LocalDateTime.now());
+        return response;
+    }
+    public SuccessTenantCreatedResponse registerTenant(RegisterTenantDto registerTenantDto){
+        User userEmail=userRepository.findByEmail(registerTenantDto.getEmail()).orElse(null);
+        User userPhone=userRepository.findByPhone(registerTenantDto.getPhone()).orElse(null);
+        if(userEmail!=null && userPhone!=null){
+            throw new CustomException("Email and phone number already registered.");
+        }
+        else if(userEmail!=null){
+            throw new CustomException("Email already registered.");
+        }
+        else if(userPhone!=null) {
+            throw new CustomException("Phone number already registered.");
+        }
+        String currentFileName= UUID.randomUUID() +".png";
+        Tenant tenant=new Tenant();
+        tenant.setBuilding(registerTenantDto.getBuilding());
+        tenant.setFloor(registerTenantDto.getFloor());
+        tenant.setCompanyName(registerTenantDto.getCompanyName());
+        User user=User.builder()
+                .unreadNotificationCount(0L)
+                .name(registerTenantDto.getName())
+                .phone(registerTenantDto.getPhone())
+                .email(registerTenantDto.getEmail())
+                .image(currentFileName)
+                .password(passwordEncoder.encode(registerTenantDto.getPassword()))
+                .role(UserRole.TENANT)
+                .build();
+        UploadImage.uploadImage(registerTenantDto.getImage(), currentFileName);
+        tenant.setUser(user);
+        user.setTenant(tenant);
+        User savedUser=userRepository.save(user);
+        TenantResponse tenantResponse=new TenantResponse();
+        tenantResponse.setName(savedUser.getName());
+        tenantResponse.setImage(UploadImage.generateImageUrl(user.getImage()));
+        tenantResponse.setEmail(savedUser.getEmail());
+        tenantResponse.setPhone(user.getPhone());
+        tenantResponse.setId(user.getUserId());
+        tenantResponse.setFloor(user.getTenant().getFloor());
+        tenantResponse.setCompanyName(user.getTenant().getCompanyName());
+        tenantResponse.setBuilding(user.getTenant().getBuilding());
+        tenantResponse.setRole(user.getRole());
+        SuccessTenantCreatedResponse response=new SuccessTenantCreatedResponse();
+        response.setUser(tenantResponse);
+        response.setStatus(HttpStatus.CREATED.value());
+        response.setMessage("Tenant added successfully");
+        response.setSuccess(true);
+        response.setTimeStamp(LocalDateTime.now());
+        return response;
+    }
     public SuccessLoginResponse login(LoginRequestDto loginRequestDto){
         UserDetails userDetails= userDetailsService.loadUserByUsername(loginRequestDto.getEmail());
         UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userDetails,loginRequestDto.getPassword(),null);
