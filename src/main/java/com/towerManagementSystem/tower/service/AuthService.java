@@ -125,10 +125,11 @@ public class AuthService {
         technicianResponse.setId(user.getUserId());
         technicianResponse.setRole(user.getRole());
         technicianResponse.setSkill(savedUser.getTechnician().getSkill());
+        technicianResponse.setExperience(savedUser.getTechnician().getExperience().toString());
         SuccessTechnicianCreatedResponse response=new SuccessTechnicianCreatedResponse();
         response.setUser(technicianResponse);
         response.setStatus(HttpStatus.CREATED.value());
-        response.setMessage("Tenant added successfully");
+        response.setMessage("Technician added successfully");
         response.setSuccess(true);
         response.setTimeStamp(LocalDateTime.now());
         return response;

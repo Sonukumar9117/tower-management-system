@@ -7,16 +7,21 @@ import com.towerManagementSystem.tower.dto.Resposne.TenantResponse;
 import com.towerManagementSystem.tower.dto.Resposne.UserResponseDto;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.dto.SuccessUserListResponse;
+import com.towerManagementSystem.tower.dto.request.ChangePasswordRequestDto;
+import com.towerManagementSystem.tower.exception.CustomException;
 import com.towerManagementSystem.tower.modal.User;
 import com.towerManagementSystem.tower.respository.UserRepository;
 import com.towerManagementSystem.tower.utils.UploadImage;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +31,7 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     public SuccessResponse deleteUserById(String userId){
         userRepository.deleteById(userId);
         return SuccessResponse.builder()
@@ -82,5 +88,19 @@ public class UserService {
         successUserListResponse.setMessage(userRole+"fetched successfully");
         successUserListResponse.setPagination(pagination);
         return successUserListResponse;
+    }
+    @Transactional
+    public @Nullable SuccessResponse changePassword(String id, ChangePasswordRequestDto requestDto) {
+        if(!requestDto.getPassword().equals(requestDto.getConfirmPassword())){
+            throw  new CustomException("Confirm password doesn't match");
+        }
+       User user= userRepository.findById(id).orElseThrow(()->new CustomException("User doesn't exist"));
+        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        return SuccessResponse.builder()
+                .message("Password changed successfully")
+                .timeStamp(LocalDateTime.now())
+                .status(HttpStatus.ACCEPTED.value())
+                .success(true)
+                .build();
     }
 }
