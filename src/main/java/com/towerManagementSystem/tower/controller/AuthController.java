@@ -40,5 +40,9 @@ public class AuthController {
         SuccessResponse successResponse=authService.login(loginRequestDto);
         return ResponseEntity.ok(successResponse);
     }
+    @PostMapping("/logout/{token}")
+    public ResponseEntity<SuccessResponse>logout(@PathVariable("token") String token){
+        return ResponseEntity.ok(authService.logout(token));
+    }
 
 }

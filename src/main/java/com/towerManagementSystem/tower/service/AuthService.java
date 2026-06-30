@@ -26,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -199,12 +201,31 @@ public class AuthService {
            assert user != null;
            List<String> fcmToken=user.getFcmTokens();
            System.out.println(fcmToken);
-//           fcmToken.add(loginRequestDto.getFcmToken());
+           fcmToken.add(loginRequestDto.getFcmToken());
            user.setFcmTokens(fcmToken);
            successLoginResponse.setToken(jwtService.generateToken(user));
            successLoginResponse.setUser(UserMapper.toUserResponseDto(user));
           return successLoginResponse;
        }
        throw new CustomException("Login failed");
+    }
+
+    public SuccessResponse logout(String fcmToken){
+      User user=(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        assert user != null;
+        List<String>fcmTokens=user.getFcmTokens();
+        if(fcmTokens!=null){
+            fcmTokens.remove(fcmToken);
+            user.setFcmTokens(fcmTokens);
+        }
+        else {
+            user.setFcmTokens(new ArrayList<>());
+        }
+        return SuccessResponse.builder()
+                .success(true)
+                .status(HttpStatus.OK.value())
+                .timeStamp(LocalDateTime.now())
+                .message("Logout successfully")
+                .build();
     }
 }
