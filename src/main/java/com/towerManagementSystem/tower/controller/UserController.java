@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/change-password/{id}")
+    @PutMapping("/change-password/{id}")
     public ResponseEntity<SuccessResponse>changePassword(@PathVariable("id")String id,@RequestBody ChangePasswordRequestDto requestDto){
         return ResponseEntity.ok(userService.changePassword(id,requestDto));
     }
