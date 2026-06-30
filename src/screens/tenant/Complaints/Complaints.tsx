@@ -52,7 +52,7 @@ const Complaints = () => {
   useFocusEffect(
     React.useCallback(() => {
       fetchComplaints(
-        1,
+        0,
         activeTab == 'IN_PROGRESS'
           ? 'In Progress'
           : activeTab == 'RESOLVED'
@@ -93,7 +93,7 @@ const Complaints = () => {
               />
             )}
             renderItem={({item}) => (
-              <ComplaintCard item={item} key={item?._id} />
+              <ComplaintCard item={item} key={item?.id} />
             )}
             refreshing={isRefreshing}
             onEndReachedThreshold={0.5}
@@ -139,7 +139,7 @@ const Complaints = () => {
           />
         )}
       </View>
-      {role == 'Tenant' ? (
+      {role == 'TENANT' ? (
         <TouchableOpacity
           style={styles.floatingBtn}
           onPress={() => {

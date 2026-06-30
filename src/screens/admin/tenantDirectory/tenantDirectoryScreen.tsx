@@ -33,6 +33,8 @@ export default function TenantDirectoryScreen() {
   useEffect(() => {
     fetchUserList();
   }, []);
+  console.log(userList,"User list inisde tenant directory");
+  
   return (
     <View style={styles.primary}>
       <ScreenHeader

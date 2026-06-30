@@ -48,14 +48,13 @@ const CompanyProfile = () => {
     image,
     role,
     email,
-    tenantProfile,
-    mobileNumber,
-    _id,
+    phone,
+    id,
     name,
-    technicianProfile,
+    companyName,
+    skill:designation,
+    floor,
   } = params?.user;
-  const {designation} = technicianProfile ?? {};
-  const {companyName, floor} = tenantProfile ?? {};
   const [visible, setVisible] = useState(false);
 
   return (
@@ -66,10 +65,10 @@ const CompanyProfile = () => {
         style={{paddingBottom: 120}}>
         <ScreenHeader
           heading={
-            role != 'Technician' ? 'Tenant Details' : 'Technician Details'
+            role != 'TECHNICIAN' ? 'Tenant Details' : 'Technician Details'
           }
           subHeading={`${
-            role != 'Technician'
+            role != 'TECHNICIAN'
               ? 'Complete tenant overview'
               : 'Complete technician overview'
           }`}
@@ -90,7 +89,7 @@ const CompanyProfile = () => {
               }
               <View style={styles.tenantBadge}>
                 <TextComp
-                  text={capitalizeWords(role == 'user' ? 'Tenant' : role)}
+                  text={role}
                   style={styles.detailSub}
                 />
               </View>
@@ -109,15 +108,15 @@ const CompanyProfile = () => {
             ) : null}
 
             {/* Tower */}
-            {role == 'Technician' ? (
+            {role == 'TECHNICIAN' ? (
               <View style={styles.detailItem}>
                 <TextComp
-                  text={role == 'Technician' ? 'Skill' : 'Tower'}
+                  text={role == 'TECHNICIAN' ? 'Skill' : 'Tower'}
                   style={styles.detailLabel}
                 />
                 <TextComp
                   text={
-                    role == 'Technician'
+                    role == 'TECHNICIAN'
                       ? capitalizeWords(designation ?? '')
                       : ''
                   }
@@ -126,7 +125,7 @@ const CompanyProfile = () => {
               </View>
             ) : null}
             {/* Floor number */}
-            {role == 'Technician' ? null : (
+            {role == 'TECHNICIAN' ? null : (
               <View style={styles.detailItem}>
                 <TextComp text="Floor" style={styles.detailLabel} />
                 <TextComp text={floor} style={styles.detailValue} />
@@ -139,10 +138,10 @@ const CompanyProfile = () => {
               <View style={styles.detailItem}>
                 <TextComp text="Phone number" style={styles.detailLabel} />
                 <View style={styles.alignComponentCenter}>
-                  <TextComp text={mobileNumber} style={styles.detailValue} />
+                  <TextComp text={phone} style={styles.detailValue} />
                   <Pressable
                     onPress={() => {
-                      makeCall(mobileNumber);
+                      makeCall(phone);
                     }}
                     style={styles.callBtn}>
                     <Ionicons name="call" size={20} color={Colors.red} />
@@ -160,7 +159,7 @@ const CompanyProfile = () => {
         <ButtonComp
           onPress={() => {
             navigationRef.navigate(
-              role == 'Technician'
+              role == 'TECHNICIAN'
                 ? SCREEN_NAME.TECHNICIAN_EDIT
                 : SCREEN_NAME.TENANT_EDIT,
               {
@@ -179,7 +178,7 @@ const CompanyProfile = () => {
           onPress={() => {
             setVisible(true);
           }}
-          title={role == 'Technician' ? 'Delete Technician' : 'Delete Tenant'}
+          title={role == 'TECHNICIAN' ? 'Delete Technician' : 'Delete Tenant'}
           textStyle={styles.deleteBtnTxt}
           leftIcon={
             <Icon name="delete" size={moderateScale(25)} color={Colors.red} />
@@ -193,7 +192,7 @@ const CompanyProfile = () => {
           onCancel={() => setVisible(false)}
           onOk={() => {
             setVisible(false);
-            role == 'Technician' ? deleteTechnician(_id) : removeByid(_id);
+            role == 'TECHNICIAN' ? deleteTechnician(id) : removeByid(id);
           }}
         />
       </Modal>

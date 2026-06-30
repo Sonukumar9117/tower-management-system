@@ -18,15 +18,16 @@ const statusStyleMap = {
 } as const;
 
 function ComplaintCard({item}: {item: any}) {
+  
   const {findById} = useComplainStore();
   const formattedDate = formatTimeDifference(item?.createdAt);
   const {complaintStatus} = item ?? {};
   const stat =
-    complaintStatus == 'Pending'
+    complaintStatus == 'PENDING'
       ? 'Pending'
       : complaintStatus == 'Closed'
       ? 'Closed'
-      : complaintStatus == 'In Progress'
+      : complaintStatus == 'in_progress'
       ? 'In Progress'
       : complaintStatus == 'Reopend'
       ? 'Reopend'
@@ -36,7 +37,7 @@ function ComplaintCard({item}: {item: any}) {
     <Pressable
       style={[styles.card, {borderLeftColor: statusConfig?.dot}]}
       onPress={() => {
-        findById(item?._id);
+        findById(item?.id);
         navigationRef.navigate(SCREEN_NAME.TICKET_DETAILS, {
           ticketDetails: item,
         });
@@ -45,7 +46,7 @@ function ComplaintCard({item}: {item: any}) {
         <View style={styles.cardTitleWrap}>
           <View style={styles.categoryPill}>
             <TextComp
-              text={item?.concernedDepartments?.[0] ?? ''}
+              text={item?.concernedDepartment ?? ''}
               style={styles.categoryText}
             />
           </View>
@@ -82,7 +83,7 @@ function ComplaintCard({item}: {item: any}) {
           <TicketIcon width={13} height={11} color="#49555A" />
           <TextComp
             isDynamic
-            text={item?.complaintId ?? ''}
+            text={item?.complaintId ?? 'VT'}
             style={styles.footerText}
           />
         </View>

@@ -102,9 +102,9 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
     try {
       set({isLoading: true});
       const api = status
-        ? `${apiEndPoints.COPLAINT_LIST_STATUS}/${status}`
+        ? `${apiEndPoints.COPLAINT_LIST_STATUS}/${status.toUpperCase()}`
         : apiEndPoints.GET_COMPLAINT_LIST;
-      const res = await httpClient.get(`${api}?page=${page}&limit=20`);
+      const res = await httpClient.get(`${api}?page=${page}&limit=5`);
    
 
       console.log(res,"Resposne after fetching complaint list");
@@ -120,8 +120,9 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
         throw new Error('Unexpected response format');
       }
 
-      const {page: currPage, totalPages} = res?.data?.pagination ?? {};
-
+      const {currentPage: currPage, totalPage} = res?.data?.pagination ?? {};
+       console.log(res?.data?.pagination);
+       
       set(prev => ({
         ...prev,
         isLoading: false,
@@ -132,7 +133,7 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
             ? [...currentComplaints]
             : [...prev.complaints, ...currentComplaints],
         currentPage: currPage,
-        totalPages: totalPages,
+        totalPages: totalPage,
       }));
     } catch (err) {
       const error = err as AxiosError<{message: string}>;
@@ -182,15 +183,20 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
     const {fetchComplaints, isRefreshing} = get();
     if (isRefreshing) return;
     set({isRefreshing: true});
-    await fetchComplaints(1, status);
+    await fetchComplaints(0, status);
     set({isRefreshing: false});
   },
 
   nextPage: async (status = '') => {
+    
     const {currentPage, totalPages, fetchComplaints, loadingNextPage} = get();
     if (loadingNextPage) return;
+       
+    console.log(currentPage,totalPages);
+    
     if (currentPage < totalPages) {
       set({loadingNextPage: true});
+       console.log("Next Page is called");
       await fetchComplaints(currentPage + 1, status);
       set({loadingNextPage: false, isLoading: false});
     }

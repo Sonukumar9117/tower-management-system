@@ -127,7 +127,7 @@ const Login = () => {
       const {designation} = responseUser?.technicianProfile ?? {};
 
       const user: User = {
-        id: responseUser?._id,
+        id: responseUser?.id,
         email: responseUser?.email,
         image: responseUser?.image,
         building: responseUser?.building,

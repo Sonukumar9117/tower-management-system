@@ -13,17 +13,17 @@ type TenantCardProps = {
   user: any;
 };
 function TenantCard({user}: TenantCardProps) {
+  
+  
   const {
     image,
-    tenantProfile,
-
+    skill:designation,
     name,
     role,
-    mobileNumber,
-    technicianProfile,
+    phone,
+    companyName,
+    floor,
   } = user;
-  const {designation} = technicianProfile ?? {};
-  const {companyName, floor} = tenantProfile ?? {};
   return (
     <Pressable
       onPress={() =>
@@ -46,7 +46,7 @@ function TenantCard({user}: TenantCardProps) {
               fontSize: moderateScale(17),
               fontWeight: 'bold',
             }}>
-            {role == 'Technician' ? name : companyName}
+            {role == 'TECHNICIAN' ? name : companyName}
           </Text>
         </View>
         {
@@ -55,17 +55,17 @@ function TenantCard({user}: TenantCardProps) {
               <View
                 style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
                 {<MaterialIcon name={'phone'} size={20} color="#D32F2F" />}
-                <Text style={styles.txt}>{mobileNumber}</Text>
+                <Text style={styles.txt}>{phone}</Text>
               </View>
             ) : null}
             <View style={styles.iconTxtContainer}>
               <MaterialIcon
-                name={role == 'Technician' ? 'engineering' : 'layers'}
+                name={role == 'TECHNICIAN' ? 'engineering' : 'layers'}
                 size={20}
                 color="#C62828"
               />
               <Text style={styles.txt}>
-                {role == 'Technician'
+                {role == 'TECHNICIAN'
                   ? capitalizeWords(designation ?? '')
                   : floor}
               </Text>
