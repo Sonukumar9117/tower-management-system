@@ -44,7 +44,7 @@ public class UserService {
             userList.forEach(user->{
                 TechnicianResponse technicianResponse=new TechnicianResponse();
                 technicianResponse.setName(user.getName());
-                technicianResponse.setImage(UploadImage.generateImageUrl(user.getImage()));
+                technicianResponse.setImage(user.getImage());
                 technicianResponse.setEmail(user.getEmail());
                 technicianResponse.setPhone(user.getPhone());
                 technicianResponse.setId(user.getUserId());
@@ -58,7 +58,7 @@ public class UserService {
             userList.forEach( user->{
                 TenantResponse tenantResponse=new TenantResponse();
                 tenantResponse.setName(user.getName());
-                tenantResponse.setImage(UploadImage.generateImageUrl(user.getImage()));
+                tenantResponse.setImage(user.getImage());
                 tenantResponse.setEmail(user.getEmail());
                 tenantResponse.setPhone(user.getPhone());
                 tenantResponse.setId(user.getUserId());
