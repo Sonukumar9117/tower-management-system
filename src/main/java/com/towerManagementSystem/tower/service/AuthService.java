@@ -164,7 +164,7 @@ public class AuthService {
         tenant.setUser(user);
         user.setTenant(tenant);
         User savedUser=userRepository.save(user);
-        TenantResponse tenantResponse = getTenantResponse(savedUser, user);
+        TenantResponse tenantResponse = UserMapper.toTenantResponse(savedUser);
         SuccessTenantCreatedResponse response=new SuccessTenantCreatedResponse();
         response.setUser(tenantResponse);
         response.setStatus(HttpStatus.CREATED.value());
@@ -174,19 +174,7 @@ public class AuthService {
         return response;
     }
 
-    private static TenantResponse getTenantResponse(User savedUser, User user) {
-        TenantResponse tenantResponse=new TenantResponse();
-        tenantResponse.setName(savedUser.getName());
-        tenantResponse.setImage(user.getImage());
-        tenantResponse.setEmail(savedUser.getEmail());
-        tenantResponse.setPhone(user.getPhone());
-        tenantResponse.setId(user.getUserId());
-        tenantResponse.setFloor(user.getTenant().getFloor());
-        tenantResponse.setCompanyName(user.getTenant().getCompanyName());
-        tenantResponse.setBuilding(user.getTenant().getBuilding());
-        tenantResponse.setRole(user.getRole());
-        return tenantResponse;
-    }
+
 
     public SuccessLoginResponse login(LoginRequestDto loginRequestDto){
         UserDetails userDetails= userDetailsService.loadUserByUsername(loginRequestDto.getEmail());

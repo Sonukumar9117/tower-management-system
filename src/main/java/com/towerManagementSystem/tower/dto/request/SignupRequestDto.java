@@ -16,6 +16,7 @@ public class SignupRequestDto {
     @NotBlank(message = "Image is required field.")
     private MultipartFile image;
     @NotBlank(message = "Name is required field.")
+    @Size(min = 3, message = "Name must have at least 3 characters.")
     private String name;
     @NotBlank(message = "Email is required field.")
     @Email(message = "Email is  not valid")

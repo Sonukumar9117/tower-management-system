@@ -1,14 +1,20 @@
 package com.towerManagementSystem.tower.service;
 
+import com.cloudinary.Cloudinary;
 import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.Resposne.Pagination;
 import com.towerManagementSystem.tower.dto.Resposne.TechnicianResponse;
 import com.towerManagementSystem.tower.dto.Resposne.TenantResponse;
 import com.towerManagementSystem.tower.dto.Resposne.UserResponseDto;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
+import com.towerManagementSystem.tower.dto.SuccessTechnicianCreatedResponse;
+import com.towerManagementSystem.tower.dto.SuccessTenantCreatedResponse;
 import com.towerManagementSystem.tower.dto.SuccessUserListResponse;
 import com.towerManagementSystem.tower.dto.request.ChangePasswordRequestDto;
+import com.towerManagementSystem.tower.dto.request.UpdateRegisteredTechnician;
+import com.towerManagementSystem.tower.dto.request.UpdateRegisteredTenant;
 import com.towerManagementSystem.tower.exception.CustomException;
+import com.towerManagementSystem.tower.mapper.UserMapper;
 import com.towerManagementSystem.tower.modal.User;
 import com.towerManagementSystem.tower.respository.UserRepository;
 import com.towerManagementSystem.tower.utils.UploadImage;
@@ -32,6 +38,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Cloudinary cloudinary;
     public SuccessResponse deleteUserById(String userId){
         userRepository.deleteById(userId);
         return SuccessResponse.builder()
@@ -102,5 +109,68 @@ public class UserService {
                 .status(HttpStatus.ACCEPTED.value())
                 .success(true)
                 .build();
+    }
+
+    @Transactional
+    public SuccessTechnicianCreatedResponse updateTechnician(UpdateRegisteredTechnician updateRegisteredTechnician, String id) {
+         User user=userRepository.findById(id).orElseThrow(()->new CustomException("User doesn't exist"));
+        System.out.println(updateRegisteredTechnician.toString());
+         if(updateRegisteredTechnician.getImage()!=null){
+             String imageUrl=UploadImage.uploadImageOnCloudinary(cloudinary, updateRegisteredTechnician.getImage());
+             user.setImage(imageUrl);
+         }
+         if(updateRegisteredTechnician.getName()!=null){
+             user.setImage(updateRegisteredTechnician.getName());
+         }
+         if(updateRegisteredTechnician.getPhone()!=null){
+             user.setPhone(updateRegisteredTechnician.getPhone());
+         }
+         if (updateRegisteredTechnician.getSkill()!=null){
+             user.getTechnician().setSkill(updateRegisteredTechnician.getSkill());
+         }
+        TechnicianResponse technicianResponse=new TechnicianResponse();
+        technicianResponse.setName(user.getName());
+        technicianResponse.setImage(user.getImage());
+        technicianResponse.setEmail(user.getEmail());
+        technicianResponse.setPhone(user.getPhone());
+        technicianResponse.setId(user.getUserId());
+        technicianResponse.setRole(user.getRole());
+        technicianResponse.setSkill(user.getTechnician().getSkill());
+        technicianResponse.setExperience(user.getTechnician().getExperience().toString());
+        SuccessTechnicianCreatedResponse response=new SuccessTechnicianCreatedResponse();
+        response.setUser(technicianResponse);
+        response.setStatus(HttpStatus.ACCEPTED.value());
+        response.setMessage("Technician updated successfully");
+        response.setSuccess(true);
+        response.setTimeStamp(LocalDateTime.now());
+        return response;
+    }
+
+    @Transactional
+    public SuccessTenantCreatedResponse updateTenant(UpdateRegisteredTenant updateRegisteredTenant, String id) {
+        User user=userRepository.findById(id).orElseThrow(()->new CustomException("User doesn't exist"));
+        if(updateRegisteredTenant.getImage()!=null){
+            user.setImage(UploadImage.uploadImageOnCloudinary(cloudinary, updateRegisteredTenant.getImage()));
+        }
+        if(updateRegisteredTenant.getCompanyName()!=null){
+            user.getTenant().setCompanyName(updateRegisteredTenant.getCompanyName());
+        }
+        if(updateRegisteredTenant.getName()!=null){
+            user.setName(updateRegisteredTenant.getName());
+        }
+        if(updateRegisteredTenant.getPhone()!=null){
+            user.setPhone(updateRegisteredTenant.getPhone());
+        }
+        if(updateRegisteredTenant.getFloor()!=null){
+            user.getTenant().setFloor(updateRegisteredTenant.getFloor().toString());
+        }
+        TenantResponse tenantResponse = UserMapper.toTenantResponse(user);
+        SuccessTenantCreatedResponse response=new SuccessTenantCreatedResponse();
+        response.setUser(tenantResponse);
+        response.setStatus(HttpStatus.CREATED.value());
+        response.setMessage("Tenant updated successfully");
+        response.setSuccess(true);
+        response.setTimeStamp(LocalDateTime.now());
+        return response;
     }
 }
