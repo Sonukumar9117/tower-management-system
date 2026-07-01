@@ -41,7 +41,7 @@ interface ComplaintState {
   createComplaint: (data: {
     title: string;
     floor: string;
-    concernedDepartments?: string;
+    concernedDepartment?: string;
     daysFacingIssue?: string;
     description?: string;
     oadingNextPage: boolean;
@@ -187,8 +187,6 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
     const {currentPage, totalPages, fetchComplaints, loadingNextPage} = get();
     if (loadingNextPage) return;
        
-    console.log(currentPage,totalPages);
-    
     if (currentPage < totalPages) {
       set({loadingNextPage: true});
        console.log("Next Page is called");
@@ -200,7 +198,7 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
   createComplaint: async ({
     title = '',
     floor = '',
-    concernedDepartments = '',
+    concernedDepartment = '',
     daysFacingIssue = '',
     description = '',
     building = '',
@@ -213,7 +211,7 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       const formData = new FormData();
       formData.append('title', title?.trim());
       // formData.append('floor', floor?.trim());
-      formData.append('concernedDepartments', concernedDepartments?.trim());
+      formData.append('concernedDepartment', concernedDepartment?.trim().toUpperCase());
       formData.append('daysFacingIssue', daysFacingIssue?.trim());
       formData.append('description', description?.trim());
       formData.append('building', building?.trim());
@@ -233,12 +231,14 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       );
       Toast.show({
         type: 'success',
-        text1: 'Complaint created successfully',
+        text1: res?.data?.message,
       });
       navigationRef.current?.goBack();
-      fetchComplaints(1);
+      fetchComplaints(0);
     } catch (error) {
       const err = error as AxiosError<{message: string}>;
+      console.log(err?.response);
+      
       const message =
         err.response?.data?.message ??
         err.message ??

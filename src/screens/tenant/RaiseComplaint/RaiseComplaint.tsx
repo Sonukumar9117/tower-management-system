@@ -57,7 +57,7 @@ const RaiseComplaint = () => {
   const [complain, setComplaint] = useState({
     title: '',
     floor: '4',
-    concernedDepartments: '',
+    concernedDepartment: '',
     daysFacingIssue: '5',
     description: '',
     building: 'Vista Business Tower',
@@ -180,7 +180,7 @@ const RaiseComplaint = () => {
                   styles.categoryButton,
                   {
                     backgroundColor:
-                      complain.concernedDepartments == category.label
+                      complain.concernedDepartment == category.label
                         ? 'rgba(255,0,0,0.2)'
                         : Colors.white,
                   },
@@ -188,7 +188,7 @@ const RaiseComplaint = () => {
                 onPress={() => {
                   setComplaint(prev => ({
                     ...prev,
-                    concernedDepartments: category.label,
+                    concernedDepartment: category.label,
                   }));
                 }}>
                 {category.icon}
