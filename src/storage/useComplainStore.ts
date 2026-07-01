@@ -106,23 +106,19 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
         : apiEndPoints.GET_COMPLAINT_LIST;
       const res = await httpClient.get(`${api}?page=${page}&limit=5`);
    
-
-      console.log(res,"Resposne after fetching complaint list");
-      
-      const currentComplaints = res?.data?.complaints ?? [];
+      const {complaints:currentComplaints,counts,pagination}=res?.data;
+    
 
       set({
-        numberOfPendingComplaint: res?.data?.data?.counts?.pending ?? 0,
-        numberOfProgressComplaint: res?.data?.data?.counts?.inProgress,
-        numberOfResolvedComplaint: res?.data?.data?.counts?.resolved,
+        numberOfPendingComplaint: counts?.pending ?? 0,
+        numberOfProgressComplaint:counts?.inProgress,
+        numberOfResolvedComplaint: counts?.resolved,
       });
       if (!Array.isArray(currentComplaints)) {
         throw new Error('Unexpected response format');
       }
 
-      const {currentPage: currPage, totalPage} = res?.data?.pagination ?? {};
-       console.log(res?.data?.pagination);
-       
+      const {currentPage: currPage, totalPage} = pagination ?? {}; 
       set(prev => ({
         ...prev,
         isLoading: false,
@@ -137,7 +133,6 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       }));
     } catch (err) {
       const error = err as AxiosError<{message: string}>;
-
       const message =
         error.response?.data?.message ??
         error.message ??

@@ -54,7 +54,7 @@ const Complaints = () => {
       fetchComplaints(
         0,
         activeTab == 'IN_PROGRESS'
-          ? 'In Progress'
+          ? 'IN_PROGRESS'
           : activeTab == 'RESOLVED'
           ? 'Resolved'
           : activeTab == 'Pending'

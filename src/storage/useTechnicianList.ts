@@ -68,7 +68,6 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       email,
       password,
       confirmPassword,
-      role,
       mobileNumber,
       image,
       designation,
@@ -81,10 +80,10 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       formData.append('email', email);
       formData.append('password', password);
       formData.append('confirmPassword', confirmPassword);
-      formData.append('role', role);
-      formData.append('mobileNumber', mobileNumber);
-      formData.append('designation', designation ?? 'Electrician');
-      formData.append('experience', '0');
+      formData.append('role', "TECHNICIAN");
+      formData.append('phone', mobileNumber);
+      formData.append('skill', designation ?? '');
+      formData.append('experience', experience??'0');
       if (image?.uri) {
         formData.append('image', {
           uri: image.uri,
@@ -93,7 +92,7 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
         } as any);
       }
       const res = await httpClient.post(
-        `${apiEndPoints.CREATE_USER}`,
+        `${apiEndPoints.CREATE_TECHNICIAN}`,
         formData,
         {
           headers: {
@@ -130,10 +129,10 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
     try {
       set({isCreating: true});
       const formData = new FormData();
-      formData.append('userId', userId);
+      // formData.append('userId', userId);
       formData.append('name', name);
-      formData.append('mobileNumber', mobileNumber);
-      formData.append('designation', designation ?? '');
+      formData.append('phone', mobileNumber);
+      formData.append('skill', designation ?? '');
       if (image?.uri) {
         formData.append('image', {
           uri: image?.uri,
@@ -143,7 +142,7 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       }
 
       const res = await httpClient.put(
-        `${apiEndPoints.UPDATE_USER}`,
+        `${apiEndPoints.UPDATE_TECHNICIAN_PROFILE}/${userId}`,
         formData,
         {
           headers: {
@@ -234,7 +233,7 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
           apiEndPoints.GET_USER_LIST
         }/TECHNICIAN?page=${0}&limit=${10}`,
       );
-      console.log(response);
+
       
       const {currentPage:page, totalPage} = response?.data?.pagination;
       set(state => ({

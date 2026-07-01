@@ -13,7 +13,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
-  Alert,
   Modal,
   Image,
   Text,

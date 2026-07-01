@@ -159,10 +159,10 @@ export const useUserList = create<UserListStore>((set, get) => ({
       formData.append('email', email);
       formData.append('password', password);
       formData.append('confirmPassword', confirmPassword);
-      formData.append('role', role);
+      formData.append('role', "TENANT");
       formData.append('floor', floor);
       formData.append('companyName', companyName);
-      formData.append('mobileNumber', mobileNumber);
+      formData.append('phone', mobileNumber);
       formData.append('building', building);
 
       if (image?.uri) {
@@ -174,7 +174,7 @@ export const useUserList = create<UserListStore>((set, get) => ({
       }
       //call api
       const res = await httpClient.post(
-        `${apiEndPoints.CREATE_USER}`,
+        `${apiEndPoints.CREATE_TENANT}`,
         formData,
         {
           headers: {
@@ -192,7 +192,11 @@ export const useUserList = create<UserListStore>((set, get) => ({
       fetchUserList();
       navigationRef.goBack();
     } catch (error) {
+      console.log(error,"THis is error");
+      
       const err = error as AxiosError;
+      console.log(err?.response);
+      
       Toast.show({
         type: 'error',
         text1: err.response?.data?.message,
@@ -209,7 +213,6 @@ export const useUserList = create<UserListStore>((set, get) => ({
     const {
       userId,
       name,
-      role,
       floor,
       companyName,
       mobileNumber,
@@ -219,13 +222,12 @@ export const useUserList = create<UserListStore>((set, get) => ({
     try {
       set({isCreating: true});
       const formData = new FormData();
-      formData.append('userId', userId);
+  
       formData.append('name', name);
-
-      // formData.append('role', role);
+      // // formData.append('role', role);
       formData.append('floor', floor);
       formData.append('companyName', companyName);
-      formData.append('mobileNumber', mobileNumber);
+      formData.append('phone', mobileNumber);
       formData.append('building', building);
       if (image?.uri && image?.uri?.length > 0) {
         formData.append('image', {
@@ -236,7 +238,7 @@ export const useUserList = create<UserListStore>((set, get) => ({
       }
 
       const res = await httpClient.put(
-        `${apiEndPoints.UPDATE_USER}`,
+        `${apiEndPoints.UPDATE_TENANT_PROFILE}/${userId}`,
         formData,
         {
           headers: {
@@ -253,8 +255,12 @@ export const useUserList = create<UserListStore>((set, get) => ({
       navigationRef.goBack();
       fetchUserList();
     } catch (err) {
+      console.log(err);
+      
       const error = err as AxiosError;
       const {message, errors} = error?.response?.data;
+      console.log(error?.response);
+      
       Toast.show({
         type: 'error',
         text1: message ?? 'Something went wrong.',
@@ -383,6 +389,11 @@ export const useUserList = create<UserListStore>((set, get) => ({
         userList: state.userList.filter(user => user?._id != id),
       }));
     } catch (error) {
+      console.log(error);
+      const err=error as AxiosError
+      console.log(err?.response);
+      
+      
     } finally {
       set({isDeleting: false});
     }

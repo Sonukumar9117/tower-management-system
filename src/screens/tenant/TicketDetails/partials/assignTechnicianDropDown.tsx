@@ -7,11 +7,13 @@ import {horizontalScale, moderateScale} from '@/src/util/responsiveDimension';
 import {Text} from 'react-native';
 import {Colors} from '@/src/constants/Colors';
 import React from 'react';
+
 type AssignTechniCianProp = {
   userList: any[];
   setSelected: React.Dispatch<any>;
   selectedValue: any;
 };
+
 const AssignTechnicianDropDown: React.FC<AssignTechniCianProp> = ({
   userList,
   setSelected,
@@ -42,7 +44,7 @@ const AssignTechnicianDropDown: React.FC<AssignTechniCianProp> = ({
                     styles.statusOptionText,
                     {fontSize: moderateScale(14)},
                   ]}>
-                  {item?.technicianProfile?.designation}
+                  {item?.skill}
                 </Text>
               </View>
             </View>
@@ -52,7 +54,7 @@ const AssignTechnicianDropDown: React.FC<AssignTechniCianProp> = ({
           setSelected(item);
         }}
         labelField={'name'}
-        valueField={'_id'}></Dropdown>
+        valueField={'id'}></Dropdown>
     </View>
   );
 };
