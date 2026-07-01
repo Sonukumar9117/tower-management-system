@@ -29,6 +29,7 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
   const [imageViewVisible, setImageViewVisible] = useState(false);
   const [imageViewLink, setImageViewLink] = useState([{uri: ''}]);
   const [openingImage, setOpeningImage] = useState<number>(0);
+  
   return (
     <View>
       <TextComp text="Attach Photos" style={styles.photoSectionLabel} />

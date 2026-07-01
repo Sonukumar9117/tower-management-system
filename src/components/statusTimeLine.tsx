@@ -4,7 +4,7 @@ import {Colors} from '../constants/Colors';
 import fontFamily from '../styles/fontFamily';
 import {moderateScale, verticalScale} from '../util/responsiveDimension';
 
-type Status = 'Pending' | 'In Progress' | 'Reopend' | 'Resolved' | 'Closed';
+type Status = 'PENDING' | 'IN_PROGRESS' | 'REOPENED' | 'RESOLVED' | 'CLOSED';
 
 interface Step {
   key: Status;
@@ -14,25 +14,25 @@ interface Step {
 
 const STEPS: Step[] = [
   {
-    key: 'Pending',
+    key: 'PENDING',
     label: 'Pending',
     subLabel: '',
   },
   {
-    key: 'In Progress',
+    key: 'IN_PROGRESS',
     label: 'In Progress',
     subLabel: '',
   },
   // {key: 'Reopend', label: 'Reopened'},
-  {key: 'Resolved', label: 'Resolved'},
+  {key: 'RESOLVED', label: 'Resolved'},
   // {key: 'Closed', label: 'Closed'},
 ];
 
 const STATUS_ORDER: Status[] = [
-  'Pending',
-  'In Progress',
+  'PENDING',
+  'IN_PROGRESS',
   // 'Reopend',
-  'Resolved',
+  'RESOLVED',
   // 'Closed',
 ];
 

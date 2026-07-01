@@ -33,7 +33,7 @@ const CommentList: React.FC<CommentListProp> = props => {
   return (
     <View>
       <TextComp text="Comments" style={styles.updatesLabel} />
-      {commentList?.length == 0 && role != 'Admin' ? (
+      {commentList && commentList?.length == 0 && role != 'ADMIN' ? (
         <View style={styles.noCommentContainer}>
           <MaterialCommunityIcons
             name="message-off-outline"

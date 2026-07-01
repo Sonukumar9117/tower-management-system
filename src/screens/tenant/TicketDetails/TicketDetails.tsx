@@ -30,9 +30,9 @@ import CommentList from './partials/commentList';
 import {useTechnicianList} from '@/src/storage/useTechnicianList';
 
 type ComplaintStatus =
-  | 'Pending'
-  | 'In Progress'
-  | 'Resolved'
+  | 'PENDING'
+  | 'IN_PROGRESS'
+  | 'RESOLVED'
   | 'Closed'
   | 'Reopened';
 
@@ -54,10 +54,12 @@ const TicketDetails = () => {
   } = useComplainStore();
   
   const complaint = complaints.find(item => item.id === id);
+  console.log(complaint,"THis is complaint log");
+  
   const {
     createdAt,
     description,
-    image,
+    images,
     updatedAt,
     severity,
     complaintStatus: status,
@@ -72,7 +74,7 @@ const TicketDetails = () => {
   const styles = useTicketStyles();
   const [comment, setComment] = useState('');
   const [selectedValue, setSelected] = useState(technicianId);
-  const [status1, setStatus1] = useState<ComplaintStatus>(status ?? 'Resolved');
+  const [status1, setStatus1] = useState<ComplaintStatus>(status ?? 'RESOLVED');
   const [techStatus, setTechStatus] = useState(technicianStatus);
   const [visible, setVisible] = useState(false);
   const {updateTechnicianStatus, isUpdatingStatus} = useTechnician();
@@ -256,12 +258,12 @@ const TicketDetails = () => {
                 <View
                   style={[
                     styles.statusOptions,
-                    {opacity: status == 'Resolved' ? 0.4 : 1},
+                    {opacity: status == 'RESOLVED' ? 0.4 : 1},
                   ]}>
                   {[
-                    {key: 'Pending', label: 'Pending'},
-                    {key: 'In Progress', label: 'In Progress'},
-                    {key: 'Resolved', label: 'Resolved'},
+                    {key: 'PENDING', label: 'Pending'},
+                    {key: 'IN_PROGRESS', label: 'In Progress'},
+                    {key: 'RESOLVED', label: 'Resolved'},
                     // {key: 'Closed', label: 'Closed'},
                     // {key: 'Reopened', label: 'Resolved'},
                   ].map(item => {
@@ -273,7 +275,7 @@ const TicketDetails = () => {
                         onPress={() => {
                           setTechStatus(item?.key);
                         }}
-                        disabled={status == 'Resolved'}>
+                        disabled={status == 'RESOLVED'}>
                         <View
                           style={[
                             styles.radioOuter,
@@ -302,9 +304,9 @@ const TicketDetails = () => {
                 />
                 <View style={styles.statusOptions}>
                   {[
-                    {key: 'Pending', label: 'Pending'},
-                    {key: 'In Progress', label: 'In Progress'},
-                    {key: 'Resolved', label: 'Resolved'},
+                    {key: 'PENDING', label: 'Pending'},
+                    {key: 'IN_PROGRESS', label: 'In Progress'},
+                    {key: 'RESOLVED', label: 'Resolved'},
                     // {key: 'Closed', label: 'Closed'},
                     // {key: 'Reopened', label: 'Resolved'},
                   ].map(item => {
@@ -381,16 +383,16 @@ const TicketDetails = () => {
               </View>
             ) : null}
             <ImageContainer
-              image={image}
+              image={images}
               setImageDownloading={setImageDownloading}
             />
-            {/* <CommentList
-              commentList={commentList}
+            <CommentList
+              commentList={commentList??[]}
               comment={comment}
               setComment={setComment}
               // handleComment={handleComment}
               handleComment={()=>{}}
-            /> */}
+            />
             {role == 'ADMIN' || role == 'TECHNICIAN' ? (
               <View style={styles.updateBtnContainer}>
                 <TouchableOpacity
