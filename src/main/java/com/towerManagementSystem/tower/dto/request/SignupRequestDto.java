@@ -2,10 +2,7 @@ package com.towerManagementSystem.tower.dto.request;
 
 
 import com.towerManagementSystem.tower.domain.UserRole;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @ToString
 @Data
 public class SignupRequestDto {
-    @NotBlank(message = "Image is required field.")
+    @NotNull(message = "Image is required field.")
     private MultipartFile image;
     @NotBlank(message = "Name is required field.")
     @Size(min = 3, message = "Name must have at least 3 characters.")
