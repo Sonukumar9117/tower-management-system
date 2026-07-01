@@ -52,13 +52,13 @@ const Complaints = () => {
   useFocusEffect(
     React.useCallback(() => {
       fetchComplaints(
-        1,
+        0,
         activeTab == 'IN_PROGRESS'
           ? 'In Progress'
           : activeTab == 'RESOLVED'
           ? 'Resolved'
           : activeTab == 'Pending'
-          ? 'Pending'
+          ? 'PENDING'
           : '',
       );
       return () => {};
