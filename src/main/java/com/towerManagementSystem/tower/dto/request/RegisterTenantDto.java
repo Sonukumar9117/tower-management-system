@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterTenantDto extends RegisterTechnicianDto{
+public class RegisterTenantDto extends SignupRequestDto{
     @NotNull(message = "Floor is required field.")
     private String floor;
     @NotNull(message = "Company name is required.")

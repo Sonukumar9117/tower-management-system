@@ -18,7 +18,7 @@ public class SignupRequestDto {
     @NotBlank(message = "Email is required field.")
     @Email(message = "Email is  not valid")
     private  String email;
-    @NotBlank(message = "Role is required field")
+    @NotNull(message = "Role is required field")
     private UserRole role;
     @NotBlank(message = "Mobile number is required field.")
     @Size(min = 10, max = 10, message = "Mobile Number is not valid")
