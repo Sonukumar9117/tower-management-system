@@ -121,7 +121,7 @@ public class UserService {
              user.setImage(imageUrl);
          }
          if(updateRegisteredTechnician.getName()!=null){
-             user.setImage(updateRegisteredTechnician.getName());
+             user.setName(updateRegisteredTechnician.getName());
          }
          if(updateRegisteredTechnician.getPhone()!=null){
              user.setPhone(updateRegisteredTechnician.getPhone());

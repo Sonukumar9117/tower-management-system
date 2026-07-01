@@ -93,6 +93,7 @@ public class ComplaintService {
        successFetchedComplaintList.setTimeStamp(LocalDateTime.now());
        return successFetchedComplaintList;
    }
+
    private CountsDto getCount(){
        CountNumberComplainByStatus countNumberComplainByStatus= complaintRepository.findNumberComplaint();
        return CountsDto.builder()
