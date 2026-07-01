@@ -6,7 +6,7 @@ export const apiEndPoints={
     "CREATE_POST":"post/create-post",
     "DELETE_POST":"post",
     "GET_COMPLAINT_LIST":"complaint/get-complaint",
-    "CREATE_COMPLAINT":"complaint",
+    "CREATE_COMPLAINT":"complaint/create-complaint",
     "DELETE_USER_BY_ID":'user/delete',
     "CREATE_TENANT":'auth/register-tenant',
     "CREATE_TECHNICIAN":'auth/register-technician',
