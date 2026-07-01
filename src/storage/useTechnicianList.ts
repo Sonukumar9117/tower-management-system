@@ -50,8 +50,8 @@ export type CreateUserProp = {
 
 export const useTechnicianList = create<UserListStore>((set, get) => ({
   isUserPasswordUpdating: false,
-  currentPage: 1,
-  totalPages: 1,
+  currentPage: 0,
+  totalPages: 0,
   loadingNextPage: false,
   isRefreshing: false,
   isCreating: false,
@@ -68,7 +68,6 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       email,
       password,
       confirmPassword,
-      role,
       mobileNumber,
       image,
       designation,
@@ -81,10 +80,10 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       formData.append('email', email);
       formData.append('password', password);
       formData.append('confirmPassword', confirmPassword);
-      formData.append('role', role);
-      formData.append('mobileNumber', mobileNumber);
-      formData.append('designation', designation ?? 'Electrician');
-      formData.append('experience', '0');
+      formData.append('role', "TECHNICIAN");
+      formData.append('phone', mobileNumber);
+      formData.append('skill', designation ?? '');
+      formData.append('experience', experience??'0');
       if (image?.uri) {
         formData.append('image', {
           uri: image.uri,
@@ -93,7 +92,7 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
         } as any);
       }
       const res = await httpClient.post(
-        `${apiEndPoints.CREATE_USER}`,
+        `${apiEndPoints.CREATE_TECHNICIAN}`,
         formData,
         {
           headers: {
@@ -130,10 +129,10 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
     try {
       set({isCreating: true});
       const formData = new FormData();
-      formData.append('userId', userId);
+      // formData.append('userId', userId);
       formData.append('name', name);
-      formData.append('mobileNumber', mobileNumber);
-      formData.append('designation', designation ?? '');
+      formData.append('phone', mobileNumber);
+      formData.append('skill', designation ?? '');
       if (image?.uri) {
         formData.append('image', {
           uri: image?.uri,
@@ -143,7 +142,7 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       }
 
       const res = await httpClient.put(
-        `${apiEndPoints.UPDATE_USER}`,
+        `${apiEndPoints.UPDATE_TECHNICIAN_PROFILE}/${userId}`,
         formData,
         {
           headers: {
@@ -179,7 +178,7 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
     try {
       set({isUserPasswordUpdating: true});
       const res = await httpClient.put(
-        `${apiEndPoints.UPDATE_PASSWORD}`,
+        `${apiEndPoints.UPDATE_PASSWORD}/${changePassword.userId}`,
         changePassword,
       );
       Toast.show({
@@ -209,14 +208,14 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       const response = await httpClient.get(
         `${
           apiEndPoints.GET_USER_LIST
-        }?role=${'Technician'}&page=${1}&limit=${100}`,
+        }/TECHNICIAN?page=${0}&limit=${10}`,
       );
      
-      const {page, totalPages} = response?.data?.data?.pagination;
+      const {currentPage:page, totalPage} = response?.data?.pagination;
       set(state => ({
-        userList: response?.data?.data?.users,
+        userList: response?.data?.users,
         currentPage: page,
-        totalPages: totalPages,
+        totalPages: totalPage,
       }));
     } catch (err) {
     } finally {
@@ -232,13 +231,15 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       const response = await httpClient.get(
         `${
           apiEndPoints.GET_USER_LIST
-        }?role=${'Technician'}&page=${1}&limit=${10}`,
+        }/TECHNICIAN?page=${0}&limit=${10}`,
       );
-      const {page, totalPages} = response?.data?.data?.pagination;
+
+      
+      const {currentPage:page, totalPage} = response?.data?.pagination;
       set(state => ({
-        userList: response?.data?.data?.users,
+        userList: response?.data?.users,
         currentPage: page,
-        totalPages: totalPages,
+        totalPages: totalPage,
       }));
     } catch (err) {
     } finally {
@@ -252,16 +253,16 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       if (loadingNextPage || currentPage >= total) return;
       set(state => ({...state, loadingNextPage: true}));
       const response = await httpClient.get(
-        `${apiEndPoints.GET_USER_LIST}?role=${'Technician'}&page=${
+        `${apiEndPoints.GET_USER_LIST}/TECHNICIAN?page=${
           currentPage + 1
         }&limit=${10}`,
       );
   
-      const {page, totalPages} = response?.data?.data?.pagination;
+      const {currentPage:page, totalPage} = response?.data?.pagination;
       set(state => ({
-        userList: [...userList, ...response?.data?.data?.users],
+        userList: [...userList, ...response?.data?.users],
         currentPage: page,
-        totalPages: totalPages,
+        totalPages: totalPage,
       }));
     } catch (err) {
     } finally {
@@ -277,7 +278,7 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       const response = await httpClient.delete(
         `${apiEndPoints.DELETE_USER_BY_ID}/${id}`,
       );
-      set({userList: userList.filter(user => user?._id != id)}); //this line is written to remove from list
+      set({userList: userList.filter(user => user?.id != id)}); //this line is written to remove from list
       Toast.show({
         type: 'success',
         text1: 'Tenant deleted successfully.',
@@ -287,6 +288,8 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
         userList: state.userList.filter(user => user?._id != id),
       }));
     } catch (error) {
+      console.log((error as AxiosError)?.response);
+      
     } finally {
       set({isDeleting: false});
     }

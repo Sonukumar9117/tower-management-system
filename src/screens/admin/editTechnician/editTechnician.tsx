@@ -13,7 +13,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
-  Alert,
   Modal,
   Image,
   Text,
@@ -65,12 +64,12 @@ const EditTechnician = () => {
     image: image1,
     floor,
     building,
-    mobileNumber,
-    _id,
+    phone:mobileNumber,
+    id,
+    skill:designation1,
     name,
-    technicianProfile,
+
   } = params?.user;
-  const {designation: designation1}=technicianProfile??{}
 
 
   const [liaisonName, setLiaisonName] = useState(name);
@@ -100,9 +99,9 @@ const EditTechnician = () => {
     useTechnicianList();
 
   const [userData, setUserData] = useState<UpdateUserProp>({
-    userId: _id,
+    userId: id,
     name: '',
-    role: 'Technician',
+    role: 'TECHNICIAN',
     floor: '',
     companyName: '',
     mobileNumber: '',
@@ -373,7 +372,7 @@ const EditTechnician = () => {
                     setUpdatePasswordPayload(prev => ({
                       password: e,
                       confirmPassword: prev?.confirmPassword ?? '',
-                      userId: _id ?? '',
+                      userId: id ?? '',
                     }));
                   }}
                   placeholder="Password"
@@ -400,7 +399,7 @@ const EditTechnician = () => {
                     setUpdatePasswordPayload(prev => ({
                       password: prev?.password ?? '',
                       confirmPassword: e.trim(),
-                      userId: _id ?? '',
+                      userId: id ?? '',
                     }));
                   }}
                   placeholder="Confirm Password"

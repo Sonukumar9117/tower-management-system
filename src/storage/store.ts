@@ -46,9 +46,7 @@ export const useUser = create<UseUserProp>((set, get) => ({
     try {
       set({isLoading: true});
       const fcmToken = await getFcmToken();
-      const response = await httpClient.post(`${apiEndPoints.LOGOUT}`, {
-        fcmToken: fcmToken,
-      });
+      const response = await httpClient.post(`${apiEndPoints.LOGOUT}/${fcmToken}`);
       Toast.show({
         type: 'success',
         text1: response?.data?.message ?? 'Logout successful',
@@ -129,8 +127,8 @@ type UserListStore = {
 
 export const useUserList = create<UserListStore>((set, get) => ({
   isUserPasswordUpdating: false,
-  currentPage: 1,
-  totalPages: 1,
+  currentPage: 0,
+  totalPages: 0,
   loadingNextPage: false,
   isRefreshing: false,
   isCreating: false,
@@ -161,10 +159,10 @@ export const useUserList = create<UserListStore>((set, get) => ({
       formData.append('email', email);
       formData.append('password', password);
       formData.append('confirmPassword', confirmPassword);
-      formData.append('role', role);
+      formData.append('role', "TENANT");
       formData.append('floor', floor);
       formData.append('companyName', companyName);
-      formData.append('mobileNumber', mobileNumber);
+      formData.append('phone', mobileNumber);
       formData.append('building', building);
 
       if (image?.uri) {
@@ -176,7 +174,7 @@ export const useUserList = create<UserListStore>((set, get) => ({
       }
       //call api
       const res = await httpClient.post(
-        `${apiEndPoints.CREATE_USER}`,
+        `${apiEndPoints.CREATE_TENANT}`,
         formData,
         {
           headers: {
@@ -194,7 +192,11 @@ export const useUserList = create<UserListStore>((set, get) => ({
       fetchUserList();
       navigationRef.goBack();
     } catch (error) {
+      console.log(error,"THis is error");
+      
       const err = error as AxiosError;
+      console.log(err?.response);
+      
       Toast.show({
         type: 'error',
         text1: err.response?.data?.message,
@@ -211,7 +213,6 @@ export const useUserList = create<UserListStore>((set, get) => ({
     const {
       userId,
       name,
-      role,
       floor,
       companyName,
       mobileNumber,
@@ -221,13 +222,12 @@ export const useUserList = create<UserListStore>((set, get) => ({
     try {
       set({isCreating: true});
       const formData = new FormData();
-      formData.append('userId', userId);
+  
       formData.append('name', name);
-
-      // formData.append('role', role);
+      // // formData.append('role', role);
       formData.append('floor', floor);
       formData.append('companyName', companyName);
-      formData.append('mobileNumber', mobileNumber);
+      formData.append('phone', mobileNumber);
       formData.append('building', building);
       if (image?.uri && image?.uri?.length > 0) {
         formData.append('image', {
@@ -238,7 +238,7 @@ export const useUserList = create<UserListStore>((set, get) => ({
       }
 
       const res = await httpClient.put(
-        `${apiEndPoints.UPDATE_USER}`,
+        `${apiEndPoints.UPDATE_TENANT_PROFILE}/${userId}`,
         formData,
         {
           headers: {
@@ -255,8 +255,12 @@ export const useUserList = create<UserListStore>((set, get) => ({
       navigationRef.goBack();
       fetchUserList();
     } catch (err) {
+      console.log(err);
+      
       const error = err as AxiosError;
       const {message, errors} = error?.response?.data;
+      console.log(error?.response);
+      
       Toast.show({
         type: 'error',
         text1: message ?? 'Something went wrong.',
@@ -274,7 +278,7 @@ export const useUserList = create<UserListStore>((set, get) => ({
     try {
       set({isUserPasswordUpdating: true});
       const res = await httpClient.put(
-        `${apiEndPoints.UPDATE_PASSWORD}`,
+        `${apiEndPoints.UPDATE_PASSWORD}/${changePassword.userId}`,
         changePassword,
       );
       Toast.show({
@@ -284,7 +288,10 @@ export const useUserList = create<UserListStore>((set, get) => ({
       navigationRef.goBack();
       navigationRef.goBack();
     } catch (error) {
+      
+      
       const err = error as AxiosError;
+      console.log(err?.response);
       Toast.show({
         type: 'error',
         text1: err?.response?.data?.message ?? 'Some thing went wrong',
@@ -301,14 +308,14 @@ export const useUserList = create<UserListStore>((set, get) => ({
   fetchUserList: async () => {
     try {
       set(state => ({...state, loading: true}));
-      const response = await httpClient.get(
-        `${apiEndPoints.GET_USER_LIST}?role=${'Tenant'}&page=${1}&limit=${10}`,
-      );
-      const {page, totalPages} = response?.data?.data?.pagination;
+       const response = await httpClient.get(
+        `${apiEndPoints.GET_USER_LIST}/TENANT?page=${0}&limit=${10}`,
+      );   
+      const {currentPage, totalPage} = response?.data?.pagination;
       set(state => ({
-        userList: response?.data?.data?.users,
-        currentPage: page,
-        totalPages: totalPages,
+        userList: response?.data?.users,
+        currentPage: currentPage,
+        totalPages: totalPage,
       }));
     } catch (err) {
     } finally {
@@ -322,15 +329,18 @@ export const useUserList = create<UserListStore>((set, get) => ({
     try {
       set(state => ({...state, isRefreshing: true}));
       const response = await httpClient.get(
-        `${apiEndPoints.GET_USER_LIST}?role=${'Tenant'}&page=${1}&limit=${10}`,
-      );
-      const {page, totalPages} = response?.data?.data?.pagination;
+        `${apiEndPoints.GET_USER_LIST}/TENANT?page=${0}&limit=${10}`,
+      );   
+      const {currentPage, totalPage} = response?.data?.pagination;
       set(state => ({
-        userList: response?.data?.data?.users,
-        currentPage: page,
-        totalPages: totalPages,
+        userList: response?.data?.users,
+        currentPage: currentPage,
+        totalPages: totalPage,
       }));
     } catch (err) {
+      
+      
+      
     } finally {
       set(state => ({...state, isRefreshing: false}));
     }
@@ -342,16 +352,16 @@ export const useUserList = create<UserListStore>((set, get) => ({
       if (loadingNextPage || currentPage >= total) return;
       set(state => ({...state, loadingNextPage: true}));
       const response = await httpClient.get(
-        `${apiEndPoints.GET_USER_LIST}?role=${'Tenant'}&page=${
+        `${apiEndPoints.GET_USER_LIST}/TENANT?page=${
           currentPage + 1
         }&limit=${10}`,
       );
     
-      const {page, totalPages} = response?.data?.data?.pagination;
+     const {currentPage:page, totalPage} = response?.data?.pagination;
       set(state => ({
-        userList: [...userList, ...response?.data?.data?.users],
+        userList: [...userList, ...response?.data?.users],
         currentPage: page,
-        totalPages: totalPages,
+        totalPages: totalPage,
       }));
     } catch (err) {
       const error = err as AxiosError;
@@ -369,7 +379,7 @@ export const useUserList = create<UserListStore>((set, get) => ({
       const response = await httpClient.delete(
         `${apiEndPoints.DELETE_USER_BY_ID}/${id}`,
       );
-      set({userList: userList.filter(user => user?._id != id)}); //this line is written to remove from list
+      set({userList: userList.filter(user => user?.id != id)}); //this line is written to remove from list
       Toast.show({
         type: 'success',
         text1: 'Tenant deleted successfully.',
@@ -379,6 +389,11 @@ export const useUserList = create<UserListStore>((set, get) => ({
         userList: state.userList.filter(user => user?._id != id),
       }));
     } catch (error) {
+      console.log(error);
+      const err=error as AxiosError
+      console.log(err?.response);
+      
+      
     } finally {
       set({isDeleting: false});
     }

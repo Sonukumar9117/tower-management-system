@@ -56,15 +56,16 @@ const EditTenant = () => {
   const {params} = useRoute();
 
   const {
+    companyName:companyName1,
     image: image1,
     building,
+    floor,
     role,
-    tenantProfile,
-    mobileNumber,
-    _id,
+    phone:mobileNumber,
+    id,
     name,
   } = params?.user;
-  const {companyName: companyName1, floor} = tenantProfile ?? {};
+  
   const [companyName, setCompanyName] = useState(companyName1);
   const [liaisonName, setLiaisonName] = useState(name);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -93,7 +94,7 @@ const EditTenant = () => {
     useUserList();
 
   const [userData, setUserData] = useState<UpdateUserProp>({
-    userId: _id,
+    userId: id,
     name: '',
     role: role,
     floor: '',
@@ -367,7 +368,7 @@ const EditTenant = () => {
                     setUpdatePasswordPayload(prev => ({
                       password: e,
                       confirmPassword: prev?.confirmPassword ?? '',
-                      userId: _id ?? '',
+                      userId: id ?? '',
                     }))
                   }
                   placeholder="Password"
@@ -394,7 +395,7 @@ const EditTenant = () => {
                     setUpdatePasswordPayload(prev => ({
                       password: prev?.password ?? '',
                       confirmPassword: e.trim(),
-                      userId: _id ?? '',
+                      userId: id ?? '',
                     }))
                   }
                   placeholder="Confirm Password"

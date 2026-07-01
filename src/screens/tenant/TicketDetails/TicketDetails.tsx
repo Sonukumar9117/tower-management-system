@@ -40,7 +40,7 @@ const TicketDetails = () => {
   const route = useRoute();
   const params = route?.params?.ticketDetails;
   const {role} = useUser();
-  const {_id} = params ?? {};
+  const {id} = params ?? {};
   
   const {
     complaints,
@@ -53,7 +53,7 @@ const TicketDetails = () => {
     isLoading,
   } = useComplainStore();
   
-  const complaint = complaints.find(item => item._id === _id);
+  const complaint = complaints.find(item => item.id === id);
   const {
     createdAt,
     description,
@@ -85,34 +85,35 @@ const TicketDetails = () => {
   const handleUpdate = async () => {
     if (updatable) {
       await updateTechnicianStatus({
-        complaintId: _id,
+        complaintId: id,
         technicianStatus: techStatus,
       });
       setUpdatable(false);
     } else
       updateComplaintStatusByAdmin(
-        _id,
+        id,
         status != status1 ? status1 : '',
         newSaverity != severity ? newSaverity : '',
       );
   };
 
   const handleComment = async () => {
-    await updateComplaintStatusByAdmin(_id, '', '', comment.trim());
+    await updateComplaintStatusByAdmin(id, '', '', comment.trim());
     setComment('');
   };
 
-  useEffect(() => {
-    if (techStatus != technicianStatus) {
-      setUpdatable(true);
-    }
-  }, [techStatus]);
+  // useEffect(() => {
+  //   if (techStatus != technicianStatus) {
+  //     setUpdatable(true);
+  //   }
+  // }, [techStatus]);
 
-  useEffect(() => {
-    if (technicianId?._id != selectedValue?._id) {
-      assignTechnician({complaintId: _id, technicianId: selectedValue?._id});
-    }
-  }, [selectedValue]);
+  // useEffect(() => {
+  //   if (technicianId?.id != selectedValue?.id) {
+  //     assignTechnician({complaintId: id, technicianId: selectedValue?.id});
+  //   }
+  // }, [selectedValue]);
+
   const updateAtText = () => {
     return updatedAt != createdAt
       ? new Date(updatedAt).toLocaleDateString('en-IN', {
@@ -128,9 +129,11 @@ const TicketDetails = () => {
   useEffect(() => {
     fetchUserList();
   }, []);
-  useEffect(() => {
-    setCommentList(adminComment);
-  }, [complaint]);
+
+  // useEffect(() => {
+  //   setCommentList(adminComment);
+  // }, [complaint]);
+ 
   return (
     <View style={{flex: 1, width: '100%', backgroundColor: Colors.white}}>
       <KeyboardAvoidingView
@@ -154,7 +157,7 @@ const TicketDetails = () => {
               <View style={styles.cardAccent} />
               <TextComp text="Original Report" style={styles.sectionLabel} />
               <TextComp text={description} style={styles.reportText} />
-              {role != 'Technician' ? (
+              {role != 'TECHNICIAN' ? (
                 <Pressable
                   style={{position: 'absolute', right: 4, top: 6}}
                   onPress={() => {
@@ -173,7 +176,7 @@ const TicketDetails = () => {
               ) : null}
 
               <View style={[styles.reportMetaRow, {flexDirection: 'column'}]}>
-                {role != 'Admin' ? (
+                {role != 'ADMIN' ? (
                   <TextComp
                     text={`Complaint Severity : ${severity}`}
                     style={styles.reportMetaText}></TextComp>
@@ -202,7 +205,7 @@ const TicketDetails = () => {
                 </View>
               </View>
             </View>
-            {role == 'Technician' ? (
+            {role == 'TECHNICIAN' ? (
               <Pressable
                 style={styles.contactAdmin}
                 onPress={() => {
@@ -219,7 +222,7 @@ const TicketDetails = () => {
                 <Ionicons name="call" size={22} color={Colors.white} />
               </Pressable>
             ) : null}
-            {role == 'Admin' ? (
+            {role == 'ADMIN' ? (
               <>
                 {/* {technicianId ? (
                   <View
@@ -241,9 +244,9 @@ const TicketDetails = () => {
               </>
             ) : null}
 
-            {role == 'Tenant' ? (
+            {role == 'TENANT' ? (
               <StatusTimeline status={status} />
-            ) : role == 'Technician' ? (
+            ) : role == 'TECHNICIAN' ? (
               <View>
                 <TextComp
                   isDynamic
@@ -313,7 +316,7 @@ const TicketDetails = () => {
                         onPress={() => {
                           setStatus1(item?.key);
                         }}
-                        disabled={role != 'Admin'}>
+                        disabled={role != 'ADMIN'}>
                         <View
                           style={[
                             styles.radioOuter,
@@ -335,7 +338,7 @@ const TicketDetails = () => {
               </View>
             )}
 
-            {role == 'Admin' ? (
+            {role == 'ADMIN' ? (
               <View style={{marginTop: 0}}>
                 <TextComp
                   isDynamic
@@ -356,7 +359,7 @@ const TicketDetails = () => {
                         onPress={() => {
                           setNewSaverity(item.key);
                         }}
-                        disabled={role != 'Admin'}>
+                        disabled={role != 'ADMIN'}>
                         <View
                           style={[
                             styles.radioOuter,
@@ -381,20 +384,21 @@ const TicketDetails = () => {
               image={image}
               setImageDownloading={setImageDownloading}
             />
-            <CommentList
+            {/* <CommentList
               commentList={commentList}
               comment={comment}
               setComment={setComment}
-              handleComment={handleComment}
-            />
-            {role == 'Admin' || role == 'Technician' ? (
+              // handleComment={handleComment}
+              handleComment={()=>{}}
+            /> */}
+            {role == 'ADMIN' || role == 'TECHNICIAN' ? (
               <View style={styles.updateBtnContainer}>
                 <TouchableOpacity
                   style={[
                     styles.postUpdateBtn,
                     {
                       opacity: (
-                        role == 'Admin'
+                        role == 'ADMIN'
                           ? severity == newSaverity && status == status1
                           : !updatable
                       )
@@ -403,7 +407,7 @@ const TicketDetails = () => {
                     },
                   ]}
                   disabled={
-                    role == 'Admin'
+                    role == 'ADMIN'
                       ? severity == newSaverity && status == status1
                       : !updatable
                   }
@@ -417,7 +421,7 @@ const TicketDetails = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   disabled={
-                    role == 'Admin'
+                    role == 'ADMIN'
                       ? severity == newSaverity && status == status1
                       : !updatable
                   }
@@ -425,7 +429,7 @@ const TicketDetails = () => {
                     styles.postUpdateBtn,
                     {
                       opacity: (
-                        role == 'Admin'
+                        role == 'ADMIN'
                           ? severity == newSaverity && status == status1
                           : !updatable
                       )
@@ -433,7 +437,8 @@ const TicketDetails = () => {
                         : 1,
                     },
                   ]}
-                  onPress={handleUpdate}>
+                  // onPress={handleUpdate}
+                  >
                   <Text style={styles.postUpdateText}>{'Save Changes'}</Text>
                 </TouchableOpacity>
               </View>
@@ -455,7 +460,7 @@ const TicketDetails = () => {
               onCancel={() => setVisible(false)}
               onOk={() => {
                 setVisible(false);
-                deleteComplaints(_id);
+                deleteComplaints(id);
               }}
             />
           </Modal>
