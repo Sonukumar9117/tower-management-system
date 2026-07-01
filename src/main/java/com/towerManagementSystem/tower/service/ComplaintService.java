@@ -1,5 +1,6 @@
 package com.towerManagementSystem.tower.service;
 
+import com.cloudinary.Cloudinary;
 import com.towerManagementSystem.tower.domain.ComplaintStatus;
 import com.towerManagementSystem.tower.dto.Resposne.*;
 import com.towerManagementSystem.tower.dto.SuccessComplaintCreatedResponse;
@@ -29,9 +30,10 @@ import java.util.Objects;
 @Service
 public class ComplaintService {
     private final ComplaintRepository complaintRepository;
+    private final Cloudinary cloudinary;
     public SuccessComplaintCreatedResponse createComplaint(ComplaintDto complaintDto){
        User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
-        Complaint createdComplaint=complaintRepository.save(ComplaintMapper.toComplaint(complaintDto,user));
+        Complaint createdComplaint=complaintRepository.save(ComplaintMapper.toComplaint(complaintDto,user,cloudinary));
         SuccessComplaintCreatedResponse successComplaintCreatedResponse=new SuccessComplaintCreatedResponse();
         System.out.println(createdComplaint);
          successComplaintCreatedResponse.setComplaint(ComplaintMapper.toComplaintResponse(createdComplaint));
