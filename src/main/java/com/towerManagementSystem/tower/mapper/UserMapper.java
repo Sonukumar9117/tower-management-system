@@ -1,5 +1,6 @@
 package com.towerManagementSystem.tower.mapper;
 
+import com.towerManagementSystem.tower.dto.Resposne.TechnicianResponse;
 import com.towerManagementSystem.tower.dto.Resposne.TenantResponse;
 import com.towerManagementSystem.tower.dto.Resposne.UserResponseDto;
 import com.towerManagementSystem.tower.modal.User;
@@ -28,5 +29,17 @@ public class UserMapper {
         tenantResponse.setBuilding(savedUser.getTenant().getBuilding());
         tenantResponse.setRole(savedUser.getRole());
         return tenantResponse;
+    }
+    public static TechnicianResponse toTechnicianResponse(User user) {
+        TechnicianResponse technicianResponse=new TechnicianResponse();
+        technicianResponse.setName(user.getName());
+        technicianResponse.setImage(user.getImage());
+        technicianResponse.setEmail(user.getEmail());
+        technicianResponse.setPhone(user.getPhone());
+        technicianResponse.setId(user.getUserId());
+        technicianResponse.setRole(user.getRole());
+        technicianResponse.setSkill(user.getTechnician().getSkill());
+        technicianResponse.setExperience(user.getTechnician().getExperience().toString());
+        return technicianResponse;
     }
 }

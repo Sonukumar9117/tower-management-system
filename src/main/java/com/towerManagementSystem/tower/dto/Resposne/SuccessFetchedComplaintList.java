@@ -12,4 +12,6 @@ import java.util.List;
 public class SuccessFetchedComplaintList extends SuccessResponse {
     List<ComplaintResponse> complaints;
     Pagination pagination;
+    CountsDto counts;
+
 }

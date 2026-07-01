@@ -39,7 +39,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final Cloudinary cloudinary;
+
     public SuccessResponse deleteUserById(String userId){
+        User user=userRepository.findById(userId).orElseThrow(()->new CustomException("User doesn't exist."));
         userRepository.deleteById(userId);
         return SuccessResponse.builder()
                 .status(HttpStatus.OK.value())
@@ -48,40 +50,11 @@ public class UserService {
                 .timeStamp(LocalDateTime.now())
                 .build();
     }
+
     public SuccessUserListResponse getUsers(UserRole userRole,int pageNumber, int pageSize){
         Pageable pageable= PageRequest.of(pageNumber,pageSize, Sort.by("createdAt").descending());
         Page<User> userPage= userRepository.findUserByRole(pageable,userRole);
-        List<User>userList=userPage.getContent();
-        List<UserResponseDto>users=new ArrayList<>();
-        if(userRole==UserRole.TECHNICIAN){
-            userList.forEach(user->{
-                TechnicianResponse technicianResponse=new TechnicianResponse();
-                technicianResponse.setName(user.getName());
-                technicianResponse.setImage(user.getImage());
-                technicianResponse.setEmail(user.getEmail());
-                technicianResponse.setPhone(user.getPhone());
-                technicianResponse.setId(user.getUserId());
-                technicianResponse.setRole(user.getRole());
-                technicianResponse.setSkill(user.getTechnician().getSkill());
-                technicianResponse.setExperience(user.getTechnician().getExperience().toString());
-                users.add(technicianResponse);
-            });
-        }
-        else if(userRole==UserRole.TENANT){
-            userList.forEach( user->{
-                TenantResponse tenantResponse=new TenantResponse();
-                tenantResponse.setName(user.getName());
-                tenantResponse.setImage(user.getImage());
-                tenantResponse.setEmail(user.getEmail());
-                tenantResponse.setPhone(user.getPhone());
-                tenantResponse.setId(user.getUserId());
-                tenantResponse.setFloor(user.getTenant().getFloor());
-                tenantResponse.setCompanyName(user.getTenant().getCompanyName());
-                tenantResponse.setBuilding(user.getTenant().getBuilding());
-                tenantResponse.setRole(user.getRole());
-                users.add(tenantResponse);
-            });
-        }
+        List<UserResponseDto> users = getUserResponseDtos(userRole, userPage);
         Pagination pagination=Pagination.builder()
                 .currentPage(userPage.getNumber())
                 .limit(userPage.getSize())
@@ -96,6 +69,34 @@ public class UserService {
         successUserListResponse.setPagination(pagination);
         return successUserListResponse;
     }
+
+    private List<UserResponseDto> getUserResponseDtos(UserRole userRole, Page<User> userPage) {
+        List<User>userList= userPage.getContent();
+        List<UserResponseDto>users=new ArrayList<>();
+        if(userRole ==UserRole.TECHNICIAN){
+            userList.forEach(user->{
+                TechnicianResponse technicianResponse = UserMapper.toTechnicianResponse(user);
+                users.add(technicianResponse);
+            });
+        }
+        else if(userRole ==UserRole.TENANT){
+            userList.forEach( user->{
+                TenantResponse tenantResponse=new TenantResponse();
+                tenantResponse.setName(user.getName());
+                tenantResponse.setImage(user.getImage());
+                tenantResponse.setEmail(user.getEmail());
+                tenantResponse.setPhone(user.getPhone());
+                tenantResponse.setId(user.getUserId());
+                tenantResponse.setFloor(user.getTenant().getFloor());
+                tenantResponse.setCompanyName(user.getTenant().getCompanyName());
+                tenantResponse.setBuilding(user.getTenant().getBuilding());
+                tenantResponse.setRole(user.getRole());
+                users.add(tenantResponse);
+            });
+        }
+        return users;
+    }
+
     @Transactional
     public @Nullable SuccessResponse changePassword(String id, ChangePasswordRequestDto requestDto) {
         if(!requestDto.getPassword().equals(requestDto.getConfirmPassword())){
@@ -128,15 +129,7 @@ public class UserService {
          if (updateRegisteredTechnician.getSkill()!=null){
              user.getTechnician().setSkill(updateRegisteredTechnician.getSkill());
          }
-        TechnicianResponse technicianResponse=new TechnicianResponse();
-        technicianResponse.setName(user.getName());
-        technicianResponse.setImage(user.getImage());
-        technicianResponse.setEmail(user.getEmail());
-        technicianResponse.setPhone(user.getPhone());
-        technicianResponse.setId(user.getUserId());
-        technicianResponse.setRole(user.getRole());
-        technicianResponse.setSkill(user.getTechnician().getSkill());
-        technicianResponse.setExperience(user.getTechnician().getExperience().toString());
+        TechnicianResponse technicianResponse = UserMapper.toTechnicianResponse(user);
         SuccessTechnicianCreatedResponse response=new SuccessTechnicianCreatedResponse();
         response.setUser(technicianResponse);
         response.setStatus(HttpStatus.ACCEPTED.value());
@@ -145,6 +138,8 @@ public class UserService {
         response.setTimeStamp(LocalDateTime.now());
         return response;
     }
+
+
 
     @Transactional
     public SuccessTenantCreatedResponse updateTenant(UpdateRegisteredTenant updateRegisteredTenant, String id) {

@@ -6,6 +6,7 @@ import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.dto.request.PostDto;
 import com.towerManagementSystem.tower.dto.request.UpdatePostDto;
 import com.towerManagementSystem.tower.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class PostController {
     private final PostService postService;
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create-post")
-    public ResponseEntity<?>createPost(@ModelAttribute PostDto postDto){
+    public ResponseEntity<?>createPost(@ModelAttribute @Valid PostDto postDto){
         SuccessResponse successResponse=postService.createPost(postDto);
         return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
@@ -32,7 +33,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SuccessPostUpdateResponse>updatePost(@PathVariable("id") String id,  @ModelAttribute UpdatePostDto updatePostDto){
+    public ResponseEntity<SuccessPostUpdateResponse>updatePost(@PathVariable("id") String id,  @ModelAttribute @Valid UpdatePostDto updatePostDto){
         SuccessPostUpdateResponse postUpdateResponse=postService.updatePostById(id,updatePostDto);
         return ResponseEntity.ok(postUpdateResponse);
     }

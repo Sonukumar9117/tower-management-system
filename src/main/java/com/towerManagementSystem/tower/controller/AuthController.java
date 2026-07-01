@@ -19,27 +19,29 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
     @PostMapping("/signup")
-    public ResponseEntity<SuccessResponse> signup(@ModelAttribute SignupRequestDto signupRequestDto) {
+    public ResponseEntity<SuccessResponse> signup(@ModelAttribute @Valid SignupRequestDto signupRequestDto) {
          SuccessResponse successResponse= authService.signup(signupRequestDto);
           return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("register-tenant")
-    public ResponseEntity<SuccessResponse> registerTenant(@ModelAttribute RegisterTenantDto registerTenantDto) {
+    public ResponseEntity<SuccessResponse> registerTenant(@ModelAttribute @Valid RegisterTenantDto registerTenantDto) {
         SuccessResponse successResponse= authService.registerTenant(registerTenantDto);
         return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("register-technician")
-    public ResponseEntity<SuccessResponse> registerTechnician(@ModelAttribute RegisterTechnicianDto technicianDto) {
+    public ResponseEntity<SuccessResponse> registerTechnician(@ModelAttribute @Valid  RegisterTechnicianDto technicianDto) {
         SuccessResponse successResponse= authService.registerTechnician(technicianDto);
         return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
+
     @PostMapping("/login")
     public  ResponseEntity<SuccessResponse>login(@RequestBody @Valid LoginRequestDto loginRequestDto){
         SuccessResponse successResponse=authService.login(loginRequestDto);
         return ResponseEntity.ok(successResponse);
     }
+
     @PostMapping("/logout/{token}")
     public ResponseEntity<SuccessResponse>logout(@PathVariable("token") String token){
         return ResponseEntity.ok(authService.logout(token));

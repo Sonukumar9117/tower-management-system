@@ -8,6 +8,7 @@ import com.towerManagementSystem.tower.dto.request.ChangePasswordRequestDto;
 import com.towerManagementSystem.tower.dto.request.UpdateRegisteredTechnician;
 import com.towerManagementSystem.tower.dto.request.UpdateRegisteredTenant;
 import com.towerManagementSystem.tower.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/user")
 public class UserController {
     private final UserService userService;
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/test")
     public String test(){
@@ -26,7 +28,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<SuccessResponse>deleteUserById(@PathVariable("id")String id){
         return ResponseEntity.ok(userService.deleteUserById(id));
     }
@@ -43,20 +45,24 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/change-password/{id}")
-    public ResponseEntity<SuccessResponse>changePassword(@PathVariable("id")String id,@RequestBody ChangePasswordRequestDto requestDto){
+    public ResponseEntity<SuccessResponse>changePassword(@PathVariable("id")String id, @Valid @RequestBody ChangePasswordRequestDto requestDto){
         return ResponseEntity.ok(userService.changePassword(id,requestDto));
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update-technician/{id}")
-    public ResponseEntity<?>updateTechnician(@PathVariable("id")String id,@ModelAttribute  UpdateRegisteredTechnician updateRegisteredTechnician){
-        System.out.println(updateRegisteredTechnician+"Inside contorller");
+    public ResponseEntity<?>updateTechnician(@PathVariable("id")String id,@ModelAttribute @Valid  UpdateRegisteredTechnician updateRegisteredTechnician){
         SuccessTechnicianCreatedResponse response= userService.updateTechnician(updateRegisteredTechnician, id);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update-tenant/{id}")
-    public ResponseEntity<?>updateTenant(@PathVariable("id")String id, @ModelAttribute UpdateRegisteredTenant updateRegisteredTenant){
+    public ResponseEntity<SuccessTenantCreatedResponse>updateTenant(@PathVariable("id")String id, @ModelAttribute @Valid UpdateRegisteredTenant updateRegisteredTenant){
         SuccessTenantCreatedResponse response= userService.updateTenant(updateRegisteredTenant, id);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
+
+
+
 }

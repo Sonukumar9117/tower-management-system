@@ -1,9 +1,7 @@
 package com.towerManagementSystem.tower.service;
 
 import com.towerManagementSystem.tower.domain.ComplaintStatus;
-import com.towerManagementSystem.tower.dto.Resposne.ComplaintResponse;
-import com.towerManagementSystem.tower.dto.Resposne.Pagination;
-import com.towerManagementSystem.tower.dto.Resposne.SuccessFetchedComplaintList;
+import com.towerManagementSystem.tower.dto.Resposne.*;
 import com.towerManagementSystem.tower.dto.SuccessComplaintCreatedResponse;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.dto.request.ComplaintDto;
@@ -86,6 +84,7 @@ public class ComplaintService {
                .totalPage(complaintPage.getTotalPages())
                .build();
        SuccessFetchedComplaintList successFetchedComplaintList=new SuccessFetchedComplaintList();
+       successFetchedComplaintList.setCounts(getCount());
        successFetchedComplaintList.setComplaints(complaintResponseList);
        successFetchedComplaintList.setPagination(pagination);
        successFetchedComplaintList.setMessage("Complaint fetched successfully.");
@@ -93,5 +92,13 @@ public class ComplaintService {
        successFetchedComplaintList.setSuccess(true);
        successFetchedComplaintList.setTimeStamp(LocalDateTime.now());
        return successFetchedComplaintList;
+   }
+   private CountsDto getCount(){
+       CountNumberComplainByStatus countNumberComplainByStatus= complaintRepository.findNumberComplaint();
+       return CountsDto.builder()
+               .pending(countNumberComplainByStatus.getPending())
+               .resolved(countNumberComplainByStatus.getResolved())
+               .inProgress(countNumberComplainByStatus.getInProgress())
+               .build();
    }
 }
