@@ -25,7 +25,7 @@ public class ComplaintDto {
     @NotBlank(message = "Description is required filed.")
     @Size(min = 10, message = "Length of description must be greater than 100 characters")
     private String description;
-    @NotBlank(message = "Days facing issue can't be null")
+    @NotNull(message = "Days facing issue can't be null")
     public Integer daysFacingIssue;
     @NotBlank(message = "Building can't be null")
     private String building;
