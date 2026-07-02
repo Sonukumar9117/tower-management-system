@@ -1,7 +1,9 @@
 package com.towerManagementSystem.tower.dto.Resposne;
 
+import com.towerManagementSystem.tower.domain.ComplaintSeverity;
 import com.towerManagementSystem.tower.domain.ComplaintStatus;
 import com.towerManagementSystem.tower.domain.ConcernedDepartment;
+import com.towerManagementSystem.tower.modal.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +25,8 @@ public class ComplaintResponse {
     private ConcernedDepartment concernedDepartment;
     private List<String> images;
     private UserResponseDto createdBy;
+    private ComplaintSeverity severity;
+    private List<Comment>comments;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

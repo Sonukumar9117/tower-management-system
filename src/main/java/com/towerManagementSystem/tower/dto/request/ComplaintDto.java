@@ -31,5 +31,5 @@ public class ComplaintDto {
     private String building;
     @NotNull(message = "Concerned department is required field.")
     private ConcernedDepartment concernedDepartment;
-    private List<MultipartFile> images=new ArrayList<>();
+    private List<MultipartFile>images=new ArrayList<>();
 }

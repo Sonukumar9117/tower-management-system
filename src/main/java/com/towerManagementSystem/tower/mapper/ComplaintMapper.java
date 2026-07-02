@@ -1,6 +1,7 @@
 package com.towerManagementSystem.tower.mapper;
 
 import com.cloudinary.Cloudinary;
+import com.towerManagementSystem.tower.domain.ComplaintSeverity;
 import com.towerManagementSystem.tower.domain.ComplaintStatus;
 import com.towerManagementSystem.tower.dto.Resposne.ComplaintResponse;
 import com.towerManagementSystem.tower.dto.request.ComplaintDto;
@@ -21,6 +22,8 @@ public class ComplaintMapper {
                 .id(complaint.getComplaintId())
                 .complaintStatus(complaint.getComplaintStatus())
                 .description(complaint.getDescription())
+                .severity(complaint.getComplaintSeverity())
+                .comments(complaint.getCommentList())
                 .title(complaint.getTitle())
                 .concernedDepartment(complaint.getConcernedDepartment())
                 .daysFacingIssue(complaint.getDaysFacingIssue())
@@ -42,6 +45,7 @@ public class ComplaintMapper {
                 .complaintStatus(ComplaintStatus.PENDING)
                 .createdBy(user.getTenant())
                 .description(complaintDto.getDescription())
+                .complaintSeverity(ComplaintSeverity.LOW)
                 .buildingName(complaintDto.getBuilding())
                 .concernedDepartment(complaintDto.getConcernedDepartment())
                 .title(complaintDto.getTitle())

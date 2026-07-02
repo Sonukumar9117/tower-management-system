@@ -3,11 +3,14 @@ package com.towerManagementSystem.tower.service;
 import com.cloudinary.Cloudinary;
 import com.towerManagementSystem.tower.domain.ComplaintStatus;
 import com.towerManagementSystem.tower.dto.Resposne.*;
+import com.towerManagementSystem.tower.dto.SuccessCommentResponse;
 import com.towerManagementSystem.tower.dto.SuccessComplaintCreatedResponse;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
+import com.towerManagementSystem.tower.dto.request.CommentReqDto;
 import com.towerManagementSystem.tower.dto.request.ComplaintDto;
 import com.towerManagementSystem.tower.exception.CustomException;
 import com.towerManagementSystem.tower.mapper.ComplaintMapper;
+import com.towerManagementSystem.tower.modal.Comment;
 import com.towerManagementSystem.tower.modal.Complaint;
 import com.towerManagementSystem.tower.modal.Tenant;
 import com.towerManagementSystem.tower.modal.User;
@@ -20,6 +23,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +40,6 @@ public class ComplaintService {
        User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         Complaint createdComplaint=complaintRepository.save(ComplaintMapper.toComplaint(complaintDto,user,cloudinary));
         SuccessComplaintCreatedResponse successComplaintCreatedResponse=new SuccessComplaintCreatedResponse();
-        System.out.println(createdComplaint);
          successComplaintCreatedResponse.setComplaint(ComplaintMapper.toComplaintResponse(createdComplaint));
          successComplaintCreatedResponse.setSuccess(true);
          successComplaintCreatedResponse.setStatus(HttpStatus.CREATED.value());
@@ -103,5 +107,25 @@ public class ComplaintService {
                .resolved(countNumberComplainByStatus.getResolved())
                .inProgress(countNumberComplainByStatus.getInProgress())
                .build();
+   }
+
+   @Transactional
+   public SuccessCommentResponse addComment(CommentReqDto commentReqDto){
+        User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+        Complaint complaint=complaintRepository.findById(commentReqDto.getComplaintId()).orElseThrow(()->new CustomException("Complaint doesn't exist."));
+     Comment comment =Comment.builder()
+             .commentedBy(user)
+             .complaint(complaint)
+             .message(commentReqDto.getMessage())
+             .build();
+        List<Comment>commentList=complaint.getCommentList();
+        commentList.add(comment);
+       SuccessCommentResponse successCommentResponse=new SuccessCommentResponse();
+       successCommentResponse.setComments(commentList);
+       successCommentResponse.setSuccess(true);
+       successCommentResponse.setTimeStamp(LocalDateTime.now());
+       successCommentResponse.setStatus(HttpStatus.ACCEPTED.value());
+       successCommentResponse.setMessage("Comment added successfully.");
+        return successCommentResponse;
    }
 }

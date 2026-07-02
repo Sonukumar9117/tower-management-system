@@ -1,5 +1,6 @@
 package com.towerManagementSystem.tower.modal;
 
+import com.towerManagementSystem.tower.domain.ComplaintSeverity;
 import com.towerManagementSystem.tower.domain.ComplaintStatus;
 import com.towerManagementSystem.tower.domain.ConcernedDepartment;
 import jakarta.persistence.*;
@@ -42,4 +43,9 @@ public class Complaint {
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private ComplaintStatus complaintStatus=ComplaintStatus.PENDING;
+    @Enumerated(value=EnumType.STRING)
+    @Column(nullable = false)
+    private ComplaintSeverity complaintSeverity= ComplaintSeverity.LOW;
+    @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL)
+    List<Comment>commentList=new ArrayList<>();
 }
