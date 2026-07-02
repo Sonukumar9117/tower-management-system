@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -120,6 +121,7 @@ public class ComplaintService {
              .build();
         List<Comment>commentList=complaint.getCommentList();
         commentList.add(comment);
+       commentList.sort((c1, c2) -> c1.getTimeStamp().isBefore(c2.getTimeStamp()) ? 1 : 0);
        SuccessCommentResponse successCommentResponse=new SuccessCommentResponse();
        successCommentResponse.setComments(commentList);
        successCommentResponse.setSuccess(true);
