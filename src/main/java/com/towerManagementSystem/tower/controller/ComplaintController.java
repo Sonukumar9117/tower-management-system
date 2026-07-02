@@ -6,6 +6,7 @@ import com.towerManagementSystem.tower.dto.SuccessComplaintCreatedResponse;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.dto.request.CommentReqDto;
 import com.towerManagementSystem.tower.dto.request.ComplaintDto;
+import com.towerManagementSystem.tower.dto.request.ComplaintUpdateReqDto;
 import com.towerManagementSystem.tower.service.ComplaintService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -69,5 +70,9 @@ public class ComplaintController {
     @PutMapping("/add-comment")
     public ResponseEntity<?>addComplaint(@RequestBody CommentReqDto comment){
         return new ResponseEntity<>(complaintService.addComment(comment), HttpStatus.ACCEPTED);
+    }
+    @PutMapping("/update")
+    public ResponseEntity<?>updateComplaint(@RequestBody  ComplaintUpdateReqDto complaintUpdateReqDto){
+        return new ResponseEntity<>(complaintService.updateComplaintById(complaintUpdateReqDto),HttpStatus.ACCEPTED);
     }
 }

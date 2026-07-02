@@ -8,6 +8,7 @@ import com.towerManagementSystem.tower.dto.SuccessComplaintCreatedResponse;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.dto.request.CommentReqDto;
 import com.towerManagementSystem.tower.dto.request.ComplaintDto;
+import com.towerManagementSystem.tower.dto.request.ComplaintUpdateReqDto;
 import com.towerManagementSystem.tower.exception.CustomException;
 import com.towerManagementSystem.tower.mapper.ComplaintMapper;
 import com.towerManagementSystem.tower.modal.Comment;
@@ -129,5 +130,24 @@ public class ComplaintService {
        successCommentResponse.setStatus(HttpStatus.ACCEPTED.value());
        successCommentResponse.setMessage("Comment added successfully.");
         return successCommentResponse;
+   }
+
+   @Transactional
+   public SuccessComplaintCreatedResponse  updateComplaintById(ComplaintUpdateReqDto complaintUpdateDto){
+       System.out.println(complaintUpdateDto+"THis is complaint update dto");
+        Complaint complaint=complaintRepository.findById(complaintUpdateDto.getComplaintId()).orElseThrow(()->new CustomException("Complaint doesn't exist"));
+        if(complaintUpdateDto.getComplaintStatus()!=null) {
+            complaint.setComplaintStatus(complaintUpdateDto.getComplaintStatus());
+        }
+        if(complaintUpdateDto.getComplaintSeverity()!=null)
+            complaint.setComplaintSeverity(complaintUpdateDto.getComplaintSeverity());
+        complaint.setUpdatedAt(LocalDateTime.now());
+       SuccessComplaintCreatedResponse successComplaintCreatedResponse=new SuccessComplaintCreatedResponse();
+       successComplaintCreatedResponse.setComplaint(ComplaintMapper.toComplaintResponse(complaint));
+       successComplaintCreatedResponse.setSuccess(true);
+       successComplaintCreatedResponse.setStatus(HttpStatus.ACCEPTED.value());
+       successComplaintCreatedResponse.setMessage("Complaint updated successfully");
+       successComplaintCreatedResponse.setTimeStamp(LocalDateTime.now());
+       return successComplaintCreatedResponse;
    }
 }
