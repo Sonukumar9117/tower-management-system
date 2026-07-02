@@ -211,13 +211,13 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       const formData = new FormData();
       formData.append('title', title?.trim());
       // formData.append('floor', floor?.trim());
-      formData.append('concernedDepartment', concernedDepartment?.trim().toUpperCase());
+      formData.append('concernedDepartment', concernedDepartment?.trim());
       formData.append('daysFacingIssue', daysFacingIssue?.trim());
       formData.append('description', description?.trim());
       formData.append('building', building?.trim());
       // formData.append('companyName', companyName?.trim());
       photo.forEach((img, index) => {
-        formData.append('photo', {
+        formData.append('image', {
           uri: img.uri,
           type: img.type || 'image/jpeg',
           name: img.name || `photo_${index}.jpg`,
@@ -237,7 +237,8 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       fetchComplaints(0);
     } catch (error) {
       const err = error as AxiosError<{message: string}>;
-      console.log(err?.response);
+      console.log(err?.response
+      );
       
       const message =
         err.response?.data?.message ??
