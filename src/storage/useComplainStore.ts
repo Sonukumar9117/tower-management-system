@@ -38,6 +38,7 @@ interface ComplaintState {
     saverity?: string,
     adminComment?: string,
   ) => Promise<void>;
+  addComment: (complaraintId: string, message: string) => Promise<any>;
   createComplaint: (data: {
     title: string;
     floor: string;
@@ -105,20 +106,19 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
         ? `${apiEndPoints.COPLAINT_LIST_STATUS}/${status.toUpperCase()}`
         : apiEndPoints.GET_COMPLAINT_LIST;
       const res = await httpClient.get(`${api}?page=${page}&limit=5`);
-   
-      const {complaints:currentComplaints,counts,pagination}=res?.data;
-    
+
+      const {complaints: currentComplaints, counts, pagination} = res?.data;
 
       set({
         numberOfPendingComplaint: counts?.pending ?? 0,
-        numberOfProgressComplaint:counts?.inProgress,
+        numberOfProgressComplaint: counts?.inProgress,
         numberOfResolvedComplaint: counts?.resolved,
       });
       if (!Array.isArray(currentComplaints)) {
         throw new Error('Unexpected response format');
       }
 
-      const {currentPage: currPage, totalPage} = pagination ?? {}; 
+      const {currentPage: currPage, totalPage} = pagination ?? {};
       set(prev => ({
         ...prev,
         isLoading: false,
@@ -183,13 +183,12 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
   },
 
   nextPage: async (status = '') => {
-    
     const {currentPage, totalPages, fetchComplaints, loadingNextPage} = get();
     if (loadingNextPage) return;
-       
+
     if (currentPage < totalPages) {
       set({loadingNextPage: true});
-       console.log("Next Page is called");
+      console.log('Next Page is called');
       await fetchComplaints(currentPage + 1, status);
       set({loadingNextPage: false, isLoading: false});
     }
@@ -211,13 +210,16 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       const formData = new FormData();
       formData.append('title', title?.trim());
       // formData.append('floor', floor?.trim());
-      formData.append('concernedDepartment', concernedDepartment?.trim().toUpperCase());
+      formData.append(
+        'concernedDepartment',
+        concernedDepartment?.trim().toUpperCase(),
+      );
       formData.append('daysFacingIssue', daysFacingIssue?.trim());
       formData.append('description', description?.trim());
       formData.append('building', building?.trim());
       // formData.append('companyName', companyName?.trim());
       photo.forEach((img, index) => {
-        formData.append('photo', {
+        formData.append('images', {
           uri: img.uri,
           type: img.type || 'image/jpeg',
           name: img.name || `photo_${index}.jpg`,
@@ -238,7 +240,7 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
     } catch (error) {
       const err = error as AxiosError<{message: string}>;
       console.log(err?.response);
-      
+
       const message =
         err.response?.data?.message ??
         err.message ??
@@ -263,25 +265,26 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
     const {isUpdating, complaints} = get();
     if ((!status && !saverity && !adminComment) || isUpdating) return;
     type DataType = {
+      complaintId: string;
       complaintStatus?: string;
-      severity?: string;
+      complaintSeverity?: string;
       adminComment?: string;
     };
     try {
       set({isUpdating: true});
-      const data: DataType = {};
+      const data: DataType = {complaintId: complaintId};
       if (status) data.complaintStatus = status?.trim();
-      if (saverity) data.severity = saverity?.trim();
+      if (saverity) data.complaintSeverity = saverity?.trim();
       if (adminComment) data.adminComment = adminComment?.trim();
 
       const response = await httpClient.put(
-        `${apiEndPoints.UPDATE_COMPLAINT_BY_ADMIN}/${complaintId}`,
+        `${apiEndPoints.UPDATE_COMPLAINT_BY_ADMIN}`,
         data,
       );
-      
+
       const updatedComplaints = complaints.map(complaint => {
-        if (complaint?._id == complaintId) {
-          return {...complaint, ...response?.data?.data};
+        if (complaint?.id == complaintId) {
+          return {...complaint, ...response?.data?.complaint};
         } else return complaint;
       });
 
@@ -292,7 +295,8 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       });
     } catch (err) {
       const error = err as AxiosError;
-    
+      console.log(error?.response);
+
       Toast.show({
         type: 'error',
         text1:
@@ -303,6 +307,30 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
     } finally {
       set({isUpdating: false});
     }
+  },
+  addComment: async (complaintId: string, message: string) => {
+    try {
+      set({isUpdating: true});
+      const response = await httpClient.put(apiEndPoints.ADD_COMMENTS, {
+        complaintId: complaintId,
+        message: message,
+      });
+      set({
+        isUpdating: false,
+      });
+      Toast.show({
+        type: 'success',
+        text1: response?.data?.message,
+      });
+      return response?.data?.comments;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      set({
+        isUpdating: false,
+      });
+    }
+    return null;
   },
 
   findById: async (id: string) => {

@@ -9,6 +9,7 @@ import {
 } from '@/src/util/responsiveDimension';
 import React, {useEffect, useState} from 'react';
 import {Pressable, TextInput, View, StyleSheet} from 'react-native';
+import {SlideOutDown} from 'react-native-reanimated';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 type CommentListProp = {
   commentList: any[];
@@ -30,6 +31,9 @@ const CommentList: React.FC<CommentListProp> = props => {
       return fiveComment.reverse();
     });
   }, [commentList]);
+  console.log(commentList);
+
+  
   return (
     <View>
       <TextComp text="Comments" style={styles.updatesLabel} />
@@ -71,7 +75,7 @@ const CommentList: React.FC<CommentListProp> = props => {
               </View>
               <TextComp text="" style={styles.messageTime} />
             </View>
-            <TextComp text={text} style={styles.messageBody} />
+            <TextComp text={text?.message} style={styles.messageBody} />
           </View>
         ))}
         {commentList?.length > 3 ? (
@@ -89,7 +93,7 @@ const CommentList: React.FC<CommentListProp> = props => {
             </Pressable>
           </View>
         ) : null}
-        {role == 'Admin' ? (
+        {role == 'ADMIN' ? (
           <View style={styles.commentBox}>
             <TextInput
               value={comment}
