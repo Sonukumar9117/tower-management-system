@@ -27,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @RequiredArgsConstructor
@@ -118,11 +115,17 @@ public class ComplaintService {
      Comment comment =Comment.builder()
              .commentedBy(user)
              .complaint(complaint)
+             .timeStamp(LocalDateTime.now())
              .message(commentReqDto.getMessage())
              .build();
         List<Comment>commentList=complaint.getCommentList();
         commentList.add(comment);
-       commentList.sort((c1, c2) -> c1.getTimeStamp().isBefore(c2.getTimeStamp()) ? 1 : 0);
+       commentList.sort(
+               Comparator.comparing(
+                       Comment::getTimeStamp,
+                       Comparator.nullsLast(Comparator.naturalOrder())
+               )
+       );
        SuccessCommentResponse successCommentResponse=new SuccessCommentResponse();
        successCommentResponse.setComments(commentList);
        successCommentResponse.setSuccess(true);

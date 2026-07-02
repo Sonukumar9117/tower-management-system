@@ -22,6 +22,7 @@ public class Comment {
     @Column(nullable = false,columnDefinition = "TEXT")
     private String message;
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime timeStamp;
     @ManyToOne
     @JoinColumn(name = "complaint_id")
