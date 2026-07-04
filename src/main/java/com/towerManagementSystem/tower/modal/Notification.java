@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public class Notification {
     private String description;
     @CreationTimestamp
     private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_user_id", nullable = false)
+    private User createdBy;
     @JsonIgnore
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL)
     List<NotificationRecipient>recipients=new ArrayList<>();

@@ -23,6 +23,6 @@ public class NotificationController {
             @RequestParam(value = "limit", defaultValue = "20")
             int limit
             ){
-        return ResponseEntity.ok(notificationService.notificationRecipients());
+        return ResponseEntity.ok(notificationService.notificationRecipients(page,limit));
     }
 }

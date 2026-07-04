@@ -50,6 +50,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
     private final Cloudinary cloudinary;
+    private final NotificationService notificationService;
     public SuccessResponse signup(SignupRequestDto signupRequestDto){
         if (!signupRequestDto.getConfirmPassword().equals(signupRequestDto.getPassword())){
             throw new CustomException("Confirm password doesn't match");
@@ -188,6 +189,8 @@ public class AuthService {
            successLoginResponse.setMessage("Login successfully");
            successLoginResponse.setStatus(HttpStatus.OK.value());
            User user=(User) authentication.getPrincipal();
+           successLoginResponse.setUnreadNotificationCount(notificationService.countUnreadNotification(user.getUserId()));
+
            assert user != null;
            List<String> fcmToken=user.getFcmTokens();
            System.out.println(fcmToken);

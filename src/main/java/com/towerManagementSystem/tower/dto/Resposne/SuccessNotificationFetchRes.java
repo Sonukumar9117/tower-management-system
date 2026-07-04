@@ -4,11 +4,12 @@ import com.towerManagementSystem.tower.dto.SuccessResponse;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 
 @Getter
 @Setter
-public class SuccessLoginResponse  extends SuccessResponse {
-    private String token;
-    private UserResponseDto user;
+public class SuccessNotificationFetchRes extends SuccessResponse {
+    private List<NotificationRespDto> notifications;
+    private Pagination pagination;
     private long unreadNotificationCount;
 }

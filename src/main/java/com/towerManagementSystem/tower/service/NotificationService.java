@@ -1,7 +1,12 @@
 package com.towerManagementSystem.tower.service;
 
 import com.towerManagementSystem.tower.domain.UserRole;
+import com.towerManagementSystem.tower.dto.Resposne.NotificationRespDto;
+import com.towerManagementSystem.tower.dto.Resposne.Pagination;
+import com.towerManagementSystem.tower.dto.Resposne.SuccessNotificationFetchRes;
+import com.towerManagementSystem.tower.dto.Resposne.UserResponseDto;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
+import com.towerManagementSystem.tower.mapper.UserMapper;
 import com.towerManagementSystem.tower.modal.Notification;
 import com.towerManagementSystem.tower.modal.NotificationRecipient;
 import com.towerManagementSystem.tower.modal.NotificationRecipientId;
@@ -21,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,9 +54,12 @@ public class NotificationService {
         return notificationRepository.findNotificationCreatedById(id, page);
     }
     public boolean createNotification(String title, String message , UserRole userRole){
+        User currUser=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         Notification notification=Notification.builder()
                 .title(title)
                 .description(message)
+//                .createdBy(null)
+                .createdBy(currUser)
                 .build();
         List<User>userList=userService.findUserByRole(userRole);
         for(User user:userList){
@@ -62,10 +71,39 @@ public class NotificationService {
         }
         return true;
     }
-    public List<NotificationRecipient> notificationRecipients(){
+    public SuccessNotificationFetchRes notificationRecipients(int page, int limit){
         User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         assert user != null;
-        return notificationRecipientRepository.findAllByUserId(user.getUserId());
+        Pageable pageable=PageRequest.of(page,limit,Sort.by("notification.createdAt").descending());
+        Page<NotificationRecipient>pages=notificationRecipientRepository.findAllByUserId(user.getUserId(),pageable);
+        List<NotificationRecipient> notificationRecipient= pages.getContent();
+        List<NotificationRespDto>notificationRespDtoList=new ArrayList<>();
+        for(NotificationRecipient notif:notificationRecipient){
+            UserResponseDto userResponseDto= UserMapper.toUserResponseDto(notif.getNotification().getCreatedBy());
+            NotificationRespDto notificationRespDto=NotificationRespDto.builder()
+                    .id(notif.getNotification().getId())
+                    .title(notif.getNotification().getTitle())
+                    .description(notif.getNotification().getDescription())
+                    .createdAt(notif.getNotification().getCreatedAt())
+                    .createdBy(userResponseDto)
+                    .build();
+            notificationRespDtoList.add(notificationRespDto);
+
+        }
+        Pagination pagination=Pagination.builder()
+                .currentPage(pages.getNumber())
+                .limit(pages.getSize())
+                .totalPage(pages.getTotalPages())
+                .build();
+        SuccessNotificationFetchRes successNotificationFetchRes=new SuccessNotificationFetchRes();
+        successNotificationFetchRes.setUnreadNotificationCount(notificationRecipientRepository.findUnreadNotificationCount(user.getUserId()).getCount());
+        successNotificationFetchRes.setPagination(pagination);
+        successNotificationFetchRes.setSuccess(true);
+        successNotificationFetchRes.setMessage("Notification fetched successfully.");
+        successNotificationFetchRes.setStatus(HttpStatus.OK.value());
+        successNotificationFetchRes.setTimeStamp(LocalDateTime.now());
+        successNotificationFetchRes.setNotifications(notificationRespDtoList);
+        return successNotificationFetchRes;
     }
     @Transactional
     public NotificationRecipient updateNotificationRecipients(String userId, String notificationId){
@@ -73,5 +111,9 @@ public class NotificationService {
 //       notificationRecipient.setRead(true);
 //       return notificationRecipient;
         return null;
+    }
+
+    public long countUnreadNotification(String userId) {
+        return notificationRecipientRepository.findUnreadNotificationCount(userId).getCount();
     }
 }
