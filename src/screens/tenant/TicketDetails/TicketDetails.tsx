@@ -41,21 +41,22 @@ const TicketDetails = () => {
   const params = route?.params?.ticketDetails;
   const {role} = useUser();
   const {id} = params ?? {};
-  
+
   const {
     complaints,
     isUpdating,
     updateComplaintStatusByAdmin,
+    addComment,
     deleteComplaints,
     deleting,
     assignTechnician,
     isAssiningTechnician,
     isLoading,
   } = useComplainStore();
-  
+
   const complaint = complaints.find(item => item.id === id);
-  console.log(complaint,"THis is complaint log");
-  
+  console.log(complaint, 'THis is complaint log');
+
   const {
     createdAt,
     description,
@@ -64,12 +65,11 @@ const TicketDetails = () => {
     severity,
     complaintStatus: status,
     title,
-    adminComment,
-    complaintStatus:technicianStatus,
+    comments,
+    complaintStatus: technicianStatus,
     technicianId,
   } = complaint ?? params;
 
-  
   const {userList, fetchUserList} = useTechnicianList();
   const styles = useTicketStyles();
   const [comment, setComment] = useState('');
@@ -79,7 +79,7 @@ const TicketDetails = () => {
   const [visible, setVisible] = useState(false);
   const {updateTechnicianStatus, isUpdatingStatus} = useTechnician();
   const [newSaverity, setNewSaverity] = useState(severity);
-  const [commentList, setCommentList] = useState(adminComment);
+  const [commentList, setCommentList] = useState(comments);
 
   const [updatable, setUpdatable] = useState(false);
   const [isDownloadingImage, setImageDownloading] = useState(false);
@@ -100,7 +100,11 @@ const TicketDetails = () => {
   };
 
   const handleComment = async () => {
-    await updateComplaintStatusByAdmin(id, '', '', comment.trim());
+    // await updateComplaintStatusByAdmin(id, '', '', comment.trim());
+    const comments = await addComment(id, comment.trim());
+    if (comments != null) setCommentList(comments);
+    console.log(comments, 'THis is comment');
+
     setComment('');
   };
 
@@ -133,9 +137,9 @@ const TicketDetails = () => {
   }, []);
 
   // useEffect(() => {
-  //   setCommentList(adminComment);
+  //   setCommentList(comments);
   // }, [complaint]);
- 
+
   return (
     <View style={{flex: 1, width: '100%', backgroundColor: Colors.white}}>
       <KeyboardAvoidingView
@@ -349,9 +353,9 @@ const TicketDetails = () => {
                 />
                 <View style={styles.statusOptions}>
                   {[
-                    {key: 'Low', label: 'Low'},
-                    {key: 'Medium', label: 'Medium'},
-                    {key: 'High', label: 'High'},
+                    {key: 'LOW', label: 'Low'},
+                    {key: 'MEDIUM', label: 'Medium'},
+                    {key: 'HIGH', label: 'High'},
                   ].map(item => {
                     const isSelected = newSaverity === item.key;
                     return (
@@ -387,11 +391,10 @@ const TicketDetails = () => {
               setImageDownloading={setImageDownloading}
             />
             <CommentList
-              commentList={commentList??[]}
+              commentList={commentList ?? []}
               comment={comment}
               setComment={setComment}
-              // handleComment={handleComment}
-              handleComment={()=>{}}
+              handleComment={handleComment}
             />
             {role == 'ADMIN' || role == 'TECHNICIAN' ? (
               <View style={styles.updateBtnContainer}>
@@ -439,8 +442,8 @@ const TicketDetails = () => {
                         : 1,
                     },
                   ]}
-                  // onPress={handleUpdate}
-                  >
+                  onPress={handleUpdate}
+                >
                   <Text style={styles.postUpdateText}>{'Save Changes'}</Text>
                 </TouchableOpacity>
               </View>
