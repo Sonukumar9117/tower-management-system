@@ -26,15 +26,17 @@ function NotificationCard({
   const {findById} = useComplainStore();
   const {
     createdBy,
-    message,
+    description,
     referenceId,
     status,
+    title,
     referenceModel: type,
   } = item ?? [];
   const [visible, setVisible] = useState(false);
   const imageUri = createdBy?.image ?? '';
   const formattedTime = formatTimeDifference(item?.createdAt);
   const {unreadNotificationCount} = useUser();
+console.log(item,"Item inisde notification card");
 
   return (
     <Pressable
@@ -77,9 +79,9 @@ function NotificationCard({
         </View>
 
         <View style={{justifyContent: 'space-evenly', flex: 1}}>
-          <Text style={styles.titleText}>{message}</Text>
+          <Text style={styles.titleText}>{title}</Text>
           <Text numberOfLines={3} style={styles.descriptionText}>
-            {referenceId?.description}
+            {description}
           </Text>
         </View>
         <TouchableOpacity onPress={() => setVisible(true)}>

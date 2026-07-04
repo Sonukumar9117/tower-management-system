@@ -16,7 +16,7 @@ export const apiEndPoints={
     "UPDATE_PASSWORD":'user/change-password',
     "UPDATE_COMPLAINT_BY_ADMIN":'complaint/admin',
     "LOGOUT":'auth/logout',
-    "FETCH_NOTIFICATION":'notification',
+    "FETCH_NOTIFICATION":'notification/notification-list',
     "MARKED_ALL_NOTIFICATION_READ":"notification/read-all",
     "DELETE_COMPLAINTS_BY_ID":"complaint",
      "TECHNICIAN_ASSIGNED_COMPLAINTS":'assigned-complaints',

@@ -33,16 +33,18 @@ export const useNotification = create<NotificationProp>((set, get) => ({
     try {
       set({loading: true});
       const response = await httpClient.get(
-        `${apiEndPoints.FETCH_NOTIFICATION}?page=${1}&limit=${20}`,
+        `${apiEndPoints.FETCH_NOTIFICATION}?page=${0}&limit=${20}`,
       );
 
-      const {totalPages, page} = response?.data?.data?.pagination;
+      console.log(response,"This is response after fetching notification");
+      
+      const {totalPage, currentPage} = response?.data?.pagination;
       set({
-        notificationList: response?.data?.data?.notifications ?? [],
-        totalPage: totalPages,
-        currentPage: page,
+        notificationList: response?.data?.notifications ?? [],
+        totalPage: totalPage,
+        currentPage: currentPage,
       });
-      const unreadNotificationCount = response?.data?.data?.unreadCount;
+      const unreadNotificationCount = response?.data?.unreadNotificationCount;
       useUser.setState(state => ({
         ...state,
         unreadNotificationCount,
@@ -79,19 +81,21 @@ export const useNotification = create<NotificationProp>((set, get) => ({
     set({refreshing: true});
     try {
       const response = await httpClient.get(
-        `${apiEndPoints.FETCH_NOTIFICATION}?page=${1}&limit=${20}`,
+        `${apiEndPoints.FETCH_NOTIFICATION}?page=${0}&limit=${20}`,
       );
       Toast.show({
         type: 'success',
         text1: response?.data?.message ?? 'Notification fetched successfully',
       });
-      const {totalPages, page} = response?.data?.data?.pagination;
+      console.log(response,"Notification fetch");
+      
+      const {totalPage, currentPage} = response?.data?.pagination;
       set({
-        notificationList: response?.data?.data?.notifications ?? [],
-        totalPage: totalPages,
-        currentPage: page,
+        notificationList: response?.data?.notifications ?? [],
+        totalPage: totalPage,
+        currentPage: currentPage,
       });
-      const unreadNotificationCount = response?.data?.data?.unreadCount;
+      const unreadNotificationCount = response?.data?.unreadNotificationCount;
       useUser.setState(state => ({
         ...state,
         unreadNotificationCount,
@@ -109,6 +113,7 @@ export const useNotification = create<NotificationProp>((set, get) => ({
     }
   },
   loadMoreNotificationList: async () => {
+    return;
     const {loadingMore, totalPage, currentPage, notificationList} = get();
     if (loadingMore || currentPage >= totalPage) return;
     try {
