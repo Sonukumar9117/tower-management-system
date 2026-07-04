@@ -168,4 +168,8 @@ public class UserService {
         response.setTimeStamp(LocalDateTime.now());
         return response;
     }
+
+    public List<User>findUserByRole(UserRole userRole){
+        return userRepository.findByRole(userRole);
+    }
 }

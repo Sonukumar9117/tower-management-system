@@ -31,6 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -175,7 +176,7 @@ public class AuthService {
     }
 
 
-
+    @Transactional
     public SuccessLoginResponse login(LoginRequestDto loginRequestDto){
         UserDetails userDetails= userDetailsService.loadUserByUsername(loginRequestDto.getEmail());
         UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userDetails,loginRequestDto.getPassword(),null);
@@ -201,9 +202,11 @@ public class AuthService {
        }
        throw new CustomException("Login failed");
     }
-
+    @Transactional
     public SuccessResponse logout(String fcmToken){
-      User user=(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      User principal=(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        assert principal != null;
+        User user=userRepository.findById(principal.getUserId()).orElse(null);
         assert user != null;
         List<String>fcmTokens=user.getFcmTokens();
         if(fcmTokens!=null){

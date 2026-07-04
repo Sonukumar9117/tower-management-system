@@ -2,6 +2,7 @@ package com.towerManagementSystem.tower.service;
 
 import com.cloudinary.Cloudinary;
 import com.towerManagementSystem.tower.domain.ComplaintStatus;
+import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.Resposne.*;
 import com.towerManagementSystem.tower.dto.SuccessCommentResponse;
 import com.towerManagementSystem.tower.dto.SuccessComplaintCreatedResponse;
@@ -35,6 +36,7 @@ import java.util.*;
 public class ComplaintService {
     private final ComplaintRepository complaintRepository;
     private final Cloudinary cloudinary;
+    private final NotificationService notificationService;
     public SuccessComplaintCreatedResponse createComplaint(ComplaintDto complaintDto){
        User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         Complaint createdComplaint=complaintRepository.save(ComplaintMapper.toComplaint(complaintDto,user,cloudinary));
@@ -44,6 +46,11 @@ public class ComplaintService {
          successComplaintCreatedResponse.setStatus(HttpStatus.CREATED.value());
          successComplaintCreatedResponse.setMessage("Complaint created successfully");
          successComplaintCreatedResponse.setTimeStamp(LocalDateTime.now());
+         notificationService.createNotification(
+                 "New complaint is created by "+user.getName(),
+                 complaintDto.getTitle(),
+                 UserRole.ADMIN
+         );
          return successComplaintCreatedResponse;
     }
 

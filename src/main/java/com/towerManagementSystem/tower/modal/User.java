@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +24,6 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Table(name = "user", indexes = {@Index(name="email_index", columnList = "email"), @Index(name = "phone_index", columnList = "phone")})
 public class User implements UserDetails {
     @Id
@@ -63,9 +63,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private Technician technician;
     @Column(nullable = false)
-
     private Long unreadNotificationCount;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    List<NotificationRecipient>notifications=new ArrayList<>();
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_"+this.role));

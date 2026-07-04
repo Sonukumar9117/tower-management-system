@@ -3,6 +3,7 @@ package com.towerManagementSystem.tower.modal;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.ArrayList;
 import java.util.List;

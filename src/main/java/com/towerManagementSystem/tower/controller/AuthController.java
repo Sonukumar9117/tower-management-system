@@ -23,7 +23,6 @@ public class AuthController {
          SuccessResponse successResponse= authService.signup(signupRequestDto);
           return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
-
     @PostMapping("register-tenant")
     public ResponseEntity<SuccessResponse> registerTenant(@ModelAttribute @Valid RegisterTenantDto registerTenantDto) {
         SuccessResponse successResponse= authService.registerTenant(registerTenantDto);

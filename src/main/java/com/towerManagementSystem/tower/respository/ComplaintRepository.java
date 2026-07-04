@@ -1,13 +1,17 @@
 package com.towerManagementSystem.tower.respository;
 
 import com.towerManagementSystem.tower.domain.ComplaintStatus;
+import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.Resposne.CountNumberComplainByStatus;
 import com.towerManagementSystem.tower.modal.Complaint;
+import com.towerManagementSystem.tower.modal.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface ComplaintRepository extends JpaRepository<Complaint,String> {
@@ -22,4 +26,5 @@ public interface ComplaintRepository extends JpaRepository<Complaint,String> {
                     """
     )
     CountNumberComplainByStatus findNumberComplaint();
+
 }

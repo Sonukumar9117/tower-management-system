@@ -5,6 +5,7 @@ import com.towerManagementSystem.tower.domain.ComplaintStatus;
 import com.towerManagementSystem.tower.domain.ConcernedDepartment;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
