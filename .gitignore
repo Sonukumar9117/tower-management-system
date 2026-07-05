@@ -50,3 +50,4 @@ yml_example.txt
 podfile
 .idea/
 target/
+service-account.json

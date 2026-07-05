@@ -1,17 +1,17 @@
 // app.config.js
 export default {
   expo: {
-    name: "vistatower",
-    slug: "vista-tower-app",
+    name: "Tower-Management-System",
+    slug: "tower-app",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
-    scheme: "vistatower",
+    scheme: "towermanagementsystem",
     userInterfaceStyle: "automatic",
     ios: {
       supportsTablet: true,
       googleServicesFile: process.env.GOOGLE_SERVICE_INFOPLIST??'./GoogleService-Info.plist',
-      bundleIdentifier: "com.vistatowerapp.app",
+      bundleIdentifier: "com.tower.app",
       entitlements: {
         "aps-environment": "production",
       },
@@ -31,7 +31,7 @@ export default {
         backgroundImage: "./assets/images/icon.png",
       },
       predictiveBackGestureEnabled: false,
-      package: "com.vistatowerapp.app",
+      package: "com.tower.app",
       permissions: [
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -85,9 +85,9 @@ export default {
     extra: {
       router: {},
       eas: {
-        projectId: "9aaf0dc0-d594-4bd2-9467-7a8af01d01ab",
+        projectId: "tower-management-system-6f249",
       },
     },
-    owner: "himanshu-virtualize",
+    owner: "sonu-kumar",
   },
 };
