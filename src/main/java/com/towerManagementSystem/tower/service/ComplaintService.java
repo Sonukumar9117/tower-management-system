@@ -2,6 +2,7 @@ package com.towerManagementSystem.tower.service;
 
 import com.cloudinary.Cloudinary;
 import com.towerManagementSystem.tower.domain.ComplaintStatus;
+import com.towerManagementSystem.tower.domain.ScreenType;
 import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.Resposne.*;
 import com.towerManagementSystem.tower.dto.SuccessCommentResponse;
@@ -47,6 +48,8 @@ public class ComplaintService {
          successComplaintCreatedResponse.setMessage("Complaint created successfully");
          successComplaintCreatedResponse.setTimeStamp(LocalDateTime.now());
          notificationService.createNotification(
+                 ScreenType.COMPLAINT,
+                 createdComplaint.getComplaintId(),
                  "New complaint is created by "+user.getName(),
                  complaintDto.getTitle(),
                  UserRole.ADMIN

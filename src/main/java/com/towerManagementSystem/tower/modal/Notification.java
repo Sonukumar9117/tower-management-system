@@ -1,6 +1,7 @@
 package com.towerManagementSystem.tower.modal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.towerManagementSystem.tower.domain.ScreenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,10 @@ public class Notification {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_user_id", nullable = false)
     private User createdBy;
+    @Column(nullable = false)
+    private String contentId;
+    @Enumerated(value = EnumType.STRING)
+    private ScreenType screenType;
     @JsonIgnore
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL)
     List<NotificationRecipient>recipients=new ArrayList<>();

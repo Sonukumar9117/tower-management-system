@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/notification")
 public class NotificationController {
     private final NotificationService notificationService;
-    public ResponseEntity<SuccessResponse>deleteById(String id){
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<SuccessResponse>deleteById(@PathVariable("id") String id){
         return  new ResponseEntity<>(notificationService.deleteNotificationById(id), HttpStatus.ACCEPTED);
     }
     @GetMapping("/notification-list")

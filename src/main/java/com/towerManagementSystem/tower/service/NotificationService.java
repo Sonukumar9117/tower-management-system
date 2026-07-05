@@ -1,5 +1,6 @@
 package com.towerManagementSystem.tower.service;
 
+import com.towerManagementSystem.tower.domain.ScreenType;
 import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.Resposne.NotificationRespDto;
 import com.towerManagementSystem.tower.dto.Resposne.Pagination;
@@ -40,7 +41,10 @@ public class NotificationService {
         return false;
     }
     public SuccessResponse deleteNotificationById(String id){
-       notificationRepository.deleteById(id);
+//       notificationRepository.deleteById(id);
+        User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+        assert user != null;
+        notificationRecipientRepository.deleteRecipientNotification(user.getUserId(),id);
        return SuccessResponse.builder()
                .success(true)
                .timeStamp(LocalDateTime.now())
@@ -53,12 +57,14 @@ public class NotificationService {
         Pageable page= PageRequest.of(currentPage, limit, Sort.by("createdAt").descending()) ;
         return notificationRepository.findNotificationCreatedById(id, page);
     }
-    public boolean createNotification(String title, String message , UserRole userRole){
+
+    public boolean createNotification(ScreenType type, String contentId, String title, String message , UserRole userRole){
         User currUser=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         Notification notification=Notification.builder()
                 .title(title)
                 .description(message)
-//                .createdBy(null)
+                .screenType(type)
+                .contentId(contentId)
                 .createdBy(currUser)
                 .build();
         List<User>userList=userService.findUserByRole(userRole);
@@ -71,6 +77,7 @@ public class NotificationService {
         }
         return true;
     }
+
     public SuccessNotificationFetchRes notificationRecipients(int page, int limit){
         User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         assert user != null;
@@ -81,6 +88,9 @@ public class NotificationService {
         for(NotificationRecipient notif:notificationRecipient){
             UserResponseDto userResponseDto= UserMapper.toUserResponseDto(notif.getNotification().getCreatedBy());
             NotificationRespDto notificationRespDto=NotificationRespDto.builder()
+                    .status(notif.isRead()?"Read":"Unread")
+                    .type(notif.getNotification().getScreenType())
+                    .contentId(notif.getNotification().getContentId())
                     .id(notif.getNotification().getId())
                     .title(notif.getNotification().getTitle())
                     .description(notif.getNotification().getDescription())
@@ -88,7 +98,6 @@ public class NotificationService {
                     .createdBy(userResponseDto)
                     .build();
             notificationRespDtoList.add(notificationRespDto);
-
         }
         Pagination pagination=Pagination.builder()
                 .currentPage(pages.getNumber())
@@ -105,6 +114,7 @@ public class NotificationService {
         successNotificationFetchRes.setNotifications(notificationRespDtoList);
         return successNotificationFetchRes;
     }
+
     @Transactional
     public NotificationRecipient updateNotificationRecipients(String userId, String notificationId){
 //       NotificationRecipient notificationRecipient=  notificationRecipientRepository.findByNotificationIdAndUserId(notificationId,userId);
