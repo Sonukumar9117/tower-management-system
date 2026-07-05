@@ -154,19 +154,23 @@ export const useNotification = create<NotificationProp>((set, get) => ({
         notificationIds: [id],
       };
       const res = await httpClient.delete(
-        `${apiEndPoints.FETCH_NOTIFICATION}`,
-        {data},
+        `${apiEndPoints.DELETE_NOTIFICATION_BY_ID}/${id}`,
       );
-      const newNotificationList = notificationList.filter(
-        noti => noti?._id != id,
-      );
-      set({notificationList: newNotificationList});
+      console.log(res,"Response after deleting notification");
+      
       Toast.show({
         type: 'success',
         text1: res?.data?.message,
       });
-      // fetchNotificationList();
+      const newNotificationList = notificationList.filter(
+        noti => noti?.id != id,
+      );
+      set({notificationList: newNotificationList});
+      fetchNotificationList();
     } catch (error) {
+      const err=error as AxiosError;
+      console.log(err?.response);
+      
     } finally {
       set({deleting: false});
     }

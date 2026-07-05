@@ -17,6 +17,7 @@ export const apiEndPoints={
     "UPDATE_COMPLAINT_BY_ADMIN":'complaint/admin',
     "LOGOUT":'auth/logout',
     "FETCH_NOTIFICATION":'notification/notification-list',
+    "DELETE_NOTIFICATION_BY_ID":'notification/delete',
     "MARKED_ALL_NOTIFICATION_READ":"notification/read-all",
     "DELETE_COMPLAINTS_BY_ID":"complaint",
      "TECHNICIAN_ASSIGNED_COMPLAINTS":'assigned-complaints',

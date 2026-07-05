@@ -30,7 +30,8 @@ function NotificationCard({
     referenceId,
     status,
     title,
-    referenceModel: type,
+    type,
+    contentId,
   } = item ?? [];
   const [visible, setVisible] = useState(false);
   const imageUri = createdBy?.image ?? '';
@@ -43,10 +44,10 @@ console.log(item,"Item inisde notification card");
       style={styles.notiContainer}
       onPress={() => {
         if (unreadNotificationCount > 0) markReadAll();
-        if (type == 'Complaint') {
-          findById(referenceId?._id);
+        if (type == 'COMPLAINT') {
+          findById(contentId);
         }
-        type == 'Complaint'
+        type == 'COMPLAINT'
           ? navigationRef?.navigate(SCREEN_NAME.TICKET_DETAILS, {
               ticketDetails: referenceId,
             })
@@ -105,7 +106,7 @@ console.log(item,"Item inisde notification card");
           onCancel={() => setVisible(false)}
           onOk={() => {
             setVisible(false);
-            deleteNotification(item?._id);
+            deleteNotification(item?.id);
           }}
         />
       </Modal>
