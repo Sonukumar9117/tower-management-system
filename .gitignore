@@ -36,5 +36,6 @@ android/
 google-services.json
 GoogleService-info.plist
 .expo/
+service-account.json
 
 

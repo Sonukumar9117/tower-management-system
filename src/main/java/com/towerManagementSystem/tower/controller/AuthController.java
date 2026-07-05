@@ -1,5 +1,8 @@
 package com.towerManagementSystem.tower.controller;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
 import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.LoginRequestDto;
 import com.towerManagementSystem.tower.dto.request.RegisterTechnicianDto;
@@ -44,6 +47,17 @@ public class AuthController {
     @PostMapping("/logout/{token}")
     public ResponseEntity<SuccessResponse>logout(@PathVariable("token") String token){
         return ResponseEntity.ok(authService.logout(token));
+    }
+    
+    @PostMapping("/send")
+    public ResponseEntity<?>send() throws FirebaseMessagingException {
+        Message msz=Message.builder()
+                .setTopic("complaint")
+                .putData("body","Testing")
+                .build();
+       String id= FirebaseMessaging.getInstance().send(msz);
+        System.out.println(id+" Message send");
+     return ResponseEntity.ok("");
     }
 
 }
