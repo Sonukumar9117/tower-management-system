@@ -52,8 +52,10 @@ public class AuthController {
     @PostMapping("/send")
     public ResponseEntity<?>send() throws FirebaseMessagingException {
         Message msz=Message.builder()
-                .setTopic("complaint")
+                .setToken("ewudPpbbTLOlvjt-mDmkrw:APA91bHPA8v-Z05fGxQSfFRrfDmMegdkLnWKzItRPguuVZZuBxVgflhs25kMmrppC_ZPpJ2kj2qPBgnzmJmgF6IwA-gCTSat8GzYxS0-HQhkmqQRQk0TP1Y")
+//                .setTopic("complaint")
                 .putData("body","Testing")
+
                 .build();
        String id= FirebaseMessaging.getInstance().send(msz);
         System.out.println(id+" Message send");
