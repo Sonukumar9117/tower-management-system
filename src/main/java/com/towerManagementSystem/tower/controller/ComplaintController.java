@@ -66,7 +66,10 @@ public class ComplaintController {
             ){
         return ResponseEntity.ok(complaintService.getComplaintListByStatus(page,limit,status));
     }
-
+    @GetMapping("/id/{id}")
+    public ResponseEntity<?>getComplaintById(@PathVariable("id")String id){
+        return ResponseEntity.ok(complaintService.getComplaintById(id));
+    }
     @PutMapping("/add-comment")
     public ResponseEntity<?>addComplaint(@RequestBody CommentReqDto comment){
         return new ResponseEntity<>(complaintService.addComment(comment), HttpStatus.ACCEPTED);

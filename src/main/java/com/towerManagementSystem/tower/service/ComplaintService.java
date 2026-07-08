@@ -163,4 +163,15 @@ public class ComplaintService {
        successComplaintCreatedResponse.setTimeStamp(LocalDateTime.now());
        return successComplaintCreatedResponse;
    }
+
+   public SuccessComplaintCreatedResponse getComplaintById(String id){
+        Complaint complaint=complaintRepository.findById(id).orElseThrow(()->new CustomException("Notification doesn't exist"));
+       SuccessComplaintCreatedResponse successComplaintCreatedResponse=new SuccessComplaintCreatedResponse();
+       successComplaintCreatedResponse.setComplaint(ComplaintMapper.toComplaintResponse(complaint));
+       successComplaintCreatedResponse.setSuccess(true);
+       successComplaintCreatedResponse.setStatus(HttpStatus.OK.value());
+       successComplaintCreatedResponse.setMessage("Complaint fetched successfully");
+       successComplaintCreatedResponse.setTimeStamp(LocalDateTime.now());
+       return successComplaintCreatedResponse;
+   }
 }
