@@ -54,4 +54,15 @@ public interface NotificationRecipientRepository extends JpaRepository<Notificat
             """)
     NotificationRecipient updateNotificationStatus( String userId, String notificationId);
 
+    @Modifying
+    @Transactional
+    @Query("""
+            UPDATE NotificationRecipient nr
+            SET nr.isRead=true
+            where nr.user.userId=:userId
+            AND nr.notification.contentId=:contentId
+            """)
+    void markRead(String userId, String contentId);
+
+
 }

@@ -132,4 +132,17 @@ public class NotificationService {
     public long countUnreadNotification(String userId) {
         return notificationRecipientRepository.findUnreadNotificationCount(userId).getCount();
     }
+
+    public long markNotificationReadById(String notificationId){
+        User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+        assert user != null;
+        NotificationRecipient notificationRecipient=notificationRecipientRepository.updateNotificationStatus(user.getUserId(),notificationId);
+        return countUnreadNotification(user.getUserId());
+    }
+    public long markNotificationReadByIdAndContentId(String contentId){
+        User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
+        assert user != null;
+        notificationRecipientRepository.markRead(user.getUserId(),contentId);
+        return countUnreadNotification(user.getUserId());
+    }
 }
