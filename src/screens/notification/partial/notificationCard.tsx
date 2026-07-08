@@ -14,6 +14,7 @@ import WarningModal from '@/src/components/warningModal';
 import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {Colors} from '@/src/constants/Colors';
+import LoaderModal from '@/src/components/loaderModal';
 
 function NotificationCard({
   item,
@@ -24,32 +25,22 @@ function NotificationCard({
 }) {
   const {deleteNotification} = useNotification();
   const {findById} = useComplainStore();
-  const {
-    createdBy,
-    description,
-    referenceId,
-    status,
-    title,
-    type,
-    contentId,
-  } = item ?? [];
+  const {createdBy, description, status, title, type, contentId} = item ?? [];
   const [visible, setVisible] = useState(false);
   const imageUri = createdBy?.image ?? '';
   const formattedTime = formatTimeDifference(item?.createdAt);
   const {unreadNotificationCount} = useUser();
-console.log(item,"Item inisde notification card");
 
   return (
     <Pressable
       style={styles.notiContainer}
-      onPress={() => {
+      onPress={async () => {
+        console.log(type, 'Type of notification');
         if (unreadNotificationCount > 0) markReadAll();
-        if (type == 'COMPLAINT') {
-          findById(contentId);
-        }
+        if (type == 'COMPLAINT') await findById(contentId);
         type == 'COMPLAINT'
           ? navigationRef?.navigate(SCREEN_NAME.TICKET_DETAILS, {
-              ticketDetails: referenceId,
+              ticketDetails: contentId,
             })
           : navigationRef?.navigate(SCREEN_NAME.USER_BOTTOM_TAB);
       }}>

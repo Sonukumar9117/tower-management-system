@@ -50,7 +50,7 @@ interface ComplaintState {
     companyName?: string;
     photo?: {uri: string; type: string; name: string}[];
   }) => Promise<void>;
-  findById: (id: string) => Promise<void>;
+  findById: (id: string) => Promise<any>;
   nextPage: (status?: string) => void;
 }
 export const useComplainStore = create<ComplaintState>((set, get) => ({
@@ -268,17 +268,14 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       complaintId: string;
       complaintStatus?: string;
       complaintSeverity?: string;
-      adminComment?: string;
     };
     try {
       set({isUpdating: true});
       const data: DataType = {complaintId: complaintId};
       if (status) data.complaintStatus = status?.trim();
       if (saverity) data.complaintSeverity = saverity?.trim();
-      if (adminComment) data.adminComment = adminComment?.trim();
-
       const response = await httpClient.put(
-        `${apiEndPoints.UPDATE_COMPLAINT_BY_ADMIN}`,
+        `${apiEndPoints.UPDATE_COMPLAINT}`,
         data,
       );
 
@@ -308,6 +305,7 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       set({isUpdating: false});
     }
   },
+
   addComment: async (complaintId: string, message: string) => {
     try {
       set({isUpdating: true});
@@ -315,6 +313,8 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
         complaintId: complaintId,
         message: message,
       });
+      console.log(response, 'AFter adding a complaint');
+
       set({
         isUpdating: false,
       });
@@ -324,7 +324,7 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       });
       return response?.data?.comments;
     } catch (error) {
-      console.log(error);
+      console.log((error as AxiosError).response);
     } finally {
       set({
         isUpdating: false,
@@ -335,19 +335,24 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
 
   findById: async (id: string) => {
     const {isLoading, complaints} = get();
+    console.log('find By Id is called');
+
     try {
       if (isLoading) return;
       const removeComplaint = complaints.filter(
-        complaint => complaint?._id != id,
+        complaint => complaint?.id != id,
       );
 
       set({isLoading: true});
       const res = await httpClient.get(
         `${apiEndPoints.FIND_COMPLAINT_BY_ID}/${id}`,
       );
-      useUser.setState({unreadNotificationCount: res?.data?.data?.unreadCount});
-      set({complaints: [...removeComplaint, res?.data?.data?.complaint]});
+      console.log(res, 'AFter fetching complaint by id');
+      useUser.setState({unreadNotificationCount: res?.data?.unreadCount});
+      set({complaints: [...removeComplaint, res?.data?.complaint]});
     } catch (err) {
+      console.log((err as AxiosError).response);
+      
     } finally {
       set({isLoading: false});
     }

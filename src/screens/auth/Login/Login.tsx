@@ -89,10 +89,10 @@ const Login = () => {
 
       return;
     }
-    setLoader(true);
+    setLoader(true);    
 
     try {
-      const fcmToken = await getFcmToken();
+      const fcmToken = await getFcmToken();      
       const response = await httpClient.post(apiEndPoints.LOGIN, {
         email,
         password,

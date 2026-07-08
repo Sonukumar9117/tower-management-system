@@ -43,6 +43,7 @@ const NewsScreen = () => {
     }, []),
   );
   const renderItem = ({item}: any) => <UpdateCard item={item} />;
+  
   return (
     <View style={styles.container}>
       <ScreenHeader />

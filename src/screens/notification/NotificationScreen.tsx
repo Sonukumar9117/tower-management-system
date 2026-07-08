@@ -16,6 +16,7 @@ import LoaderModal from '@/src/components/loaderModal';
 import {styles} from './styles';
 import NotificationCard from './partial/notificationCard';
 import TextComp from '@/src/components/TextComp';
+import {useComplainStore} from '@/src/storage/useComplainStore';
 
 export default function NotificationScreen() {
   const {
@@ -31,7 +32,7 @@ export default function NotificationScreen() {
     totalPage,
     loadingMore,
   } = useNotification();
-
+  const {isLoading} = useComplainStore();
   useEffect(() => {
     fetchNotificationList();
     // setTimeout(() => {
@@ -48,6 +49,8 @@ export default function NotificationScreen() {
       </View>
     );
 
+  console.log(notificationList, 'This is notification list');
+
   return (
     <View style={styles.primaryContainer}>
       <View>
@@ -61,11 +64,13 @@ export default function NotificationScreen() {
         renderItem={item => (
           <NotificationCard
             item={item?.item}
-            key={item?.item?._id}
+            key={item?.item?.id}
             markReadAll={markedAllNotificationRead}
           />
         )}
-        ListEmptyComponent={() => <TextComp style={styles.footerTxt} text="No notification found" />}
+        ListEmptyComponent={() => (
+          <TextComp style={styles.footerTxt} text="No notification found" />
+        )}
         refreshing={refreshing}
         onEndReachedThreshold={0.5}
         onEndReached={() => {
@@ -92,7 +97,7 @@ export default function NotificationScreen() {
           </>
         )}
       />
-      <LoaderModal isVisible={deleting} />
+      <LoaderModal isVisible={deleting || isLoading} />
     </View>
   );
 }

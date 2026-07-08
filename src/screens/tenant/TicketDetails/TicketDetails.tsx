@@ -41,6 +41,7 @@ const TicketDetails = () => {
   const params = route?.params?.ticketDetails;
   const {role} = useUser();
   const {id} = params ?? {};
+  console.log(params, 'Params inside notification Screen');
 
   const {
     complaints,
@@ -54,9 +55,10 @@ const TicketDetails = () => {
     isLoading,
   } = useComplainStore();
 
-  const complaint = complaints.find(item => item.id === id);
+  const complaint = complaints.find(item =>
+    id != null ? item.id === id : item.id == params,
+  );
   console.log(complaint, 'THis is complaint log');
-
   const {
     createdAt,
     description,
@@ -442,8 +444,7 @@ const TicketDetails = () => {
                         : 1,
                     },
                   ]}
-                  onPress={handleUpdate}
-                >
+                  onPress={handleUpdate}>
                   <Text style={styles.postUpdateText}>{'Save Changes'}</Text>
                 </TouchableOpacity>
               </View>
