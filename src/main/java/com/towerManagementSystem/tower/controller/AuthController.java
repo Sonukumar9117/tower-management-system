@@ -3,6 +3,7 @@ package com.towerManagementSystem.tower.controller;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.LoginRequestDto;
 import com.towerManagementSystem.tower.dto.request.RegisterTechnicianDto;
@@ -51,11 +52,15 @@ public class AuthController {
     
     @PostMapping("/send")
     public ResponseEntity<?>send() throws FirebaseMessagingException {
+        Notification notification= Notification.builder()
+                .setTitle("Hello")
+                .setBody("Testing notification")
+                .build();
         Message msz=Message.builder()
-                .setToken("ewudPpbbTLOlvjt-mDmkrw:APA91bHPA8v-Z05fGxQSfFRrfDmMegdkLnWKzItRPguuVZZuBxVgflhs25kMmrppC_ZPpJ2kj2qPBgnzmJmgF6IwA-gCTSat8GzYxS0-HQhkmqQRQk0TP1Y")
+                .setToken("f-S67iLvSGmI4DswSjTeRZ:APA91bGy5tMI3ns-cKUYwVyvdWGbZqaYj8-A3K6ErXyDj6bxDrECBTkqJjWOVgfgWrWqxV5SwMWAH1SF-SPa2miZVs3-WJTOAVzV77WUWrsWv1zEqeYEM5Q")
 //                .setTopic("complaint")
+                .setNotification(notification)
                 .putData("body","Testing")
-
                 .build();
        String id= FirebaseMessaging.getInstance().send(msz);
         System.out.println(id+" Message send");

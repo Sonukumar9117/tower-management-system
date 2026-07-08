@@ -15,8 +15,10 @@ public class FirebaseConfiguration {
     public FirebaseApp firebaseConfig() throws IOException {
         System.out.println("Initializing Firebase...");
         FileInputStream serviceAccount =
-                new FileInputStream("D:\\tower-management-system\\service-account.json");
-
+                //when running on local
+//                new FileInputStream("D:\\tower-management-system\\service-account.json");
+        //when running on production
+        new FileInputStream("/etc/secrets/service-account.json");
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .build();

@@ -37,11 +37,12 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationRecipientRepository notificationRecipientRepository;
     private final UserService userService;
+    private final PushNotificationService pushNotificationService;
     public boolean createNotification(){
         return false;
     }
+
     public SuccessResponse deleteNotificationById(String id){
-//       notificationRepository.deleteById(id);
         User user=(User) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
         assert user != null;
         notificationRecipientRepository.deleteRecipientNotification(user.getUserId(),id);
@@ -68,13 +69,18 @@ public class NotificationService {
                 .createdBy(currUser)
                 .build();
         List<User>userList=userService.findUserByRole(userRole);
+        List<String>fcmTokens=new ArrayList<>();
         for(User user:userList){
             NotificationRecipient notificationRecipient=new NotificationRecipient();
            notificationRecipient.setNotification(notification);
            notificationRecipient.setUser(user);
            notificationRecipient.setRead(false);
            notificationRecipientRepository.save(notificationRecipient);
+            List<String>userFcmTokens= user.getFcmTokens();
+            fcmTokens.addAll(userFcmTokens);
+           pushNotificationService.sendNotification(notification.getTitle(), notification.getDescription(),fcmTokens);
         }
+
         return true;
     }
 

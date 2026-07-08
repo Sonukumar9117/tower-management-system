@@ -1,5 +1,6 @@
 package com.towerManagementSystem.tower.exceptionHandler;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.towerManagementSystem.tower.dto.ErrorResponse;
 import com.towerManagementSystem.tower.exception.CustomException;
 import com.towerManagementSystem.tower.exception.ImageException;
@@ -114,4 +115,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(FirebaseMessagingException.class)
+    public  ResponseEntity<ErrorResponse>pushNotificationError(FirebaseMessagingException ex){
+        Map<Object, Object>errors=new HashMap<>();
+        errors.put("error",ex.getMessage());
+        ErrorResponse errorResponse=ErrorResponse.builder()
+                .errors(errors)
+                .type("Broadcast notification failed")
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .build();
+        return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
