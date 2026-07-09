@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 //https://vista-tower-backend.onrender.com/api-docs/#/
 @RequiredArgsConstructor
 @RestController
@@ -25,5 +27,16 @@ public class NotificationController {
             int limit
             ){
         return ResponseEntity.ok(notificationService.notificationRecipients(page,limit));
+    }
+    @PutMapping("/mark-read/{id}")
+    public ResponseEntity<?>markAsRead(@PathVariable("id") String id){
+        notificationService.markNotificationReadByIdAndContentId(id);
+        SuccessResponse successResponse=SuccessResponse.builder()
+                .success(true)
+                .timeStamp(LocalDateTime.now())
+                .message("Notification mark as read")
+                .status(HttpStatus.OK.value())
+                .build();
+        return ResponseEntity.ok(successResponse);
     }
 }

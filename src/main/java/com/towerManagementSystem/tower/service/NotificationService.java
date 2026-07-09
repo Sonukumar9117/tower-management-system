@@ -77,7 +77,7 @@ public class NotificationService {
            notificationRecipient.setRead(false);
            notificationRecipientRepository.save(notificationRecipient);
             List<String>userFcmTokens= user.getFcmTokens();
-            fcmTokens.addAll(userFcmTokens);
+                fcmTokens.addAll(userFcmTokens);
            pushNotificationService.sendNotification(notification.getTitle(), notification.getDescription(),fcmTokens);
         }
 

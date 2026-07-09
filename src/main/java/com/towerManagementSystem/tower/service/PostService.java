@@ -1,6 +1,8 @@
 package com.towerManagementSystem.tower.service;
 
 import com.cloudinary.Cloudinary;
+import com.towerManagementSystem.tower.domain.ScreenType;
+import com.towerManagementSystem.tower.domain.UserRole;
 import com.towerManagementSystem.tower.dto.Resposne.*;
 import com.towerManagementSystem.tower.dto.SuccessPostResponse;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
@@ -35,6 +37,7 @@ import java.util.UUID;
 public class PostService {
     private final PostRepository postRepository;
     private final Cloudinary cloudinary;
+    private final NotificationService notificationService;
     @Transactional
     public SuccessPostCreatedResponse createPost(PostDto postDto){
         List<String>images=new ArrayList<>();
@@ -52,18 +55,24 @@ public class PostService {
             images.add(UploadImage.uploadImageOnCloudinary(cloudinary,multipartFile));
         }
         post.setImages(images);
-                postRepository.save(post);
-
+            Post post1= postRepository.save(post);
                 List<Post>posts=admin.getPosts();
         posts.add(post);
         admin.setPosts(posts);
-
+        notificationService.createNotification(
+                ScreenType.POST,
+                post1.getPostId(),
+                user.getName()+" created a post.",
+                post1.getDescription(),
+                UserRole.TENANT
+                );
         SuccessPostCreatedResponse successPostCreatedResponse=new SuccessPostCreatedResponse();
              successPostCreatedResponse.setPost(PostMapper.toPostResponse(post));
              successPostCreatedResponse.setMessage("Post created successfully");
              successPostCreatedResponse.setTimeStamp(LocalDateTime.now());
              successPostCreatedResponse.setSuccess(true);
              successPostCreatedResponse.setStatus(HttpStatus.CREATED.value());
+
         return successPostCreatedResponse;
     }
 
