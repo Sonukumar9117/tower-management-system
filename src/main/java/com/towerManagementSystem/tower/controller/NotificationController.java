@@ -1,5 +1,6 @@
 package com.towerManagementSystem.tower.controller;
 
+import com.towerManagementSystem.tower.dto.Resposne.SuccessNotificationMarkedRead;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -28,15 +29,16 @@ public class NotificationController {
             ){
         return ResponseEntity.ok(notificationService.notificationRecipients(page,limit));
     }
+
     @PutMapping("/mark-read/{id}")
     public ResponseEntity<?>markAsRead(@PathVariable("id") String id){
-        notificationService.markNotificationReadByIdAndContentId(id);
-        SuccessResponse successResponse=SuccessResponse.builder()
-                .success(true)
-                .timeStamp(LocalDateTime.now())
-                .message("Notification mark as read")
-                .status(HttpStatus.OK.value())
-                .build();
+       long count= notificationService.markNotificationReadByIdAndContentId(id);
+        SuccessNotificationMarkedRead successResponse=new SuccessNotificationMarkedRead();
+           successResponse.setUnreadNotificationCount(count);
+           successResponse.setSuccess(true);
+           successResponse.setTimeStamp(LocalDateTime.now());
+           successResponse.setStatus(HttpStatus.OK.value());
+           successResponse.setMessage("Notification mark as read");
         return ResponseEntity.ok(successResponse);
     }
 }
