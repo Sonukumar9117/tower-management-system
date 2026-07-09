@@ -11,6 +11,7 @@ import com.towerManagementSystem.tower.dto.request.RegisterTenantDto;
 import com.towerManagementSystem.tower.dto.request.SignupRequestDto;
 import com.towerManagementSystem.tower.dto.SuccessResponse;
 import com.towerManagementSystem.tower.service.AuthService;
+import com.towerManagementSystem.tower.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService authService;
+    @GetMapping("/test")
+    public ResponseEntity<String>chekRunning(){
+        return ResponseEntity.ok("Your backend is running fine");
+    }
     @PostMapping("/signup")
     public ResponseEntity<SuccessResponse> signup(@ModelAttribute @Valid SignupRequestDto signupRequestDto) {
          SuccessResponse successResponse= authService.signup(signupRequestDto);
