@@ -14,30 +14,29 @@ import WarningModal from '@/src/components/warningModal';
 import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {Colors} from '@/src/constants/Colors';
-import LoaderModal from '@/src/components/loaderModal';
 
 function NotificationCard({
   item,
-  markReadAll,
 }: {
   item: any;
   markReadAll: () => void;
 }) {
-  const {deleteNotification} = useNotification();
+  const {deleteNotification, markNotificationReadById} = useNotification();
   const {findById} = useComplainStore();
   const {createdBy, description, status, title, type, contentId} = item ?? [];
   const [visible, setVisible] = useState(false);
   const imageUri = createdBy?.image ?? '';
   const formattedTime = formatTimeDifference(item?.createdAt);
-  const {unreadNotificationCount} = useUser();
 
   return (
     <Pressable
       style={styles.notiContainer}
       onPress={async () => {
         console.log(type, 'Type of notification');
-        if (unreadNotificationCount > 0) markReadAll();
         if (type == 'COMPLAINT') await findById(contentId);
+        else {
+          await markNotificationReadById(contentId);
+        }
         type == 'COMPLAINT'
           ? navigationRef?.navigate(SCREEN_NAME.TICKET_DETAILS, {
               ticketDetails: contentId,

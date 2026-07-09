@@ -71,7 +71,7 @@ const UserBottomTabs = () => {
       initialRouteName={role == 'TECHNICIAN' ? 'Complaints' : 'News'}
       screenOptions={{
         headerShown: true,
-        header: () => <CustomHeader title={'Vista Business Tower'} />,
+        header: () => <CustomHeader title={'Tower Sphere'} />,
       }}
       tabBar={({state, descriptors, navigation}) => (
         <View

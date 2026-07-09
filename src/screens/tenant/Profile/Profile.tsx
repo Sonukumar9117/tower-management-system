@@ -140,7 +140,7 @@ const Profile = () => {
                   <>
                     <View style={styles.detailItem}>
                       <TextComp text={'Floor'} style={styles.detailLabel} />
-                      <TextComp text={user?.floor} style={styles.detailValue} />
+                      <TextComp text={user?.floor??5} style={styles.detailValue} />
                     </View>
                     <View style={styles.divider} />
                   </>

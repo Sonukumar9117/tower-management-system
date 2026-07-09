@@ -13,6 +13,7 @@ interface ComplaintState {
   isCreating: boolean;
   isRefreshing: boolean;
   loadingNextPage: boolean;
+  isFinding:boolean;
   error: {success: boolean; message: string} | null;
   currentPage: number;
   totalPages: number;
@@ -42,6 +43,7 @@ interface ComplaintState {
   createComplaint: (data: {
     title: string;
     floor: string;
+    isFinding:boolean;
     concernedDepartment?: string;
     daysFacingIssue?: string;
     description?: string;
@@ -56,6 +58,7 @@ interface ComplaintState {
 export const useComplainStore = create<ComplaintState>((set, get) => ({
   isAssiningTechnician: false,
   loadingNextPage: false,
+  isFinding:false,
   numberOfResolvedComplaint: 0,
   complaints: [],
   currentPage: 1,
@@ -188,7 +191,6 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
 
     if (currentPage < totalPages) {
       set({loadingNextPage: true});
-      console.log('Next Page is called');
       await fetchComplaints(currentPage + 1, status);
       set({loadingNextPage: false, isLoading: false});
     }
@@ -269,6 +271,7 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
       complaintStatus?: string;
       complaintSeverity?: string;
     };
+
     try {
       set({isUpdating: true});
       const data: DataType = {complaintId: complaintId};
@@ -334,27 +337,29 @@ export const useComplainStore = create<ComplaintState>((set, get) => ({
   },
 
   findById: async (id: string) => {
-    const {isLoading, complaints} = get();
-    console.log('find By Id is called');
-
+    const {isFinding, complaints} = get();
     try {
-      if (isLoading) return;
+      if (isFinding) return;
       const removeComplaint = complaints.filter(
         complaint => complaint?.id != id,
       );
 
-      set({isLoading: true});
+      set({isFinding: true});
       const res = await httpClient.get(
         `${apiEndPoints.FIND_COMPLAINT_BY_ID}/${id}`,
       );
-      console.log(res, 'AFter fetching complaint by id');
-      useUser.setState({unreadNotificationCount: res?.data?.unreadCount});
+      useUser.setState({
+        unreadNotificationCount: res?.data?.unreadNotificationCount,
+      });
       set({complaints: [...removeComplaint, res?.data?.complaint]});
     } catch (err) {
-      console.log((err as AxiosError).response);
-      
+      const axiosError = err as AxiosError;
+      Toast.show({
+        type: 'error',
+        text1: axiosError?.response?.message ?? 'Some thing gone wrong',
+      });
     } finally {
-      set({isLoading: false});
+      set({isFinding: false});
     }
   },
   error: null,

@@ -54,11 +54,9 @@ const TicketDetails = () => {
     isAssiningTechnician,
     isLoading,
   } = useComplainStore();
-
-  const complaint = complaints.find(item =>
-    id != null ? item.id === id : item.id == params,
-  );
-  console.log(complaint, 'THis is complaint log');
+  const [complaintId, setcomplaintId] = useState(id != null ? id : params);
+  const complaint = complaints.find(item => item.id == complaintId);
+  useEffect(() => {}, []);
   const {
     createdAt,
     description,
@@ -89,13 +87,13 @@ const TicketDetails = () => {
   const handleUpdate = async () => {
     if (updatable) {
       await updateTechnicianStatus({
-        complaintId: id,
+        complaintId: complaintId,
         technicianStatus: techStatus,
       });
       setUpdatable(false);
     } else
       updateComplaintStatusByAdmin(
-        id,
+        complaintId,
         status != status1 ? status1 : '',
         newSaverity != severity ? newSaverity : '',
       );
@@ -103,7 +101,7 @@ const TicketDetails = () => {
 
   const handleComment = async () => {
     // await updateComplaintStatusByAdmin(id, '', '', comment.trim());
-    const comments = await addComment(id, comment.trim());
+    const comments = await addComment(complaintId, comment.trim());
     if (comments != null) setCommentList(comments);
     console.log(comments, 'THis is comment');
 

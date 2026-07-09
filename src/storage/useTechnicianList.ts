@@ -83,7 +83,7 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       formData.append('role', "TECHNICIAN");
       formData.append('phone', mobileNumber);
       formData.append('skill', designation ?? '');
-      formData.append('experience', experience??'0');
+      formData.append('experience', '4');
       if (image?.uri) {
         formData.append('image', {
           uri: image.uri,
@@ -110,8 +110,11 @@ export const useTechnicianList = create<UserListStore>((set, get) => ({
       fetchUserList();
       navigationRef.goBack();
     } catch (error) {
+      console.log(error);
+      
       const err = error as AxiosError;
-
+      console.log(err.response);
+      
       Toast.show({
         type: 'error',
         text1: err.response?.data?.message,

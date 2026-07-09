@@ -13,13 +13,16 @@ type NotificationProp = {
   totalPage: number;
   loadingMore: boolean;
   deleting: boolean;
+  markingNotificationRead: boolean;
   deleteNotification: (id: string) => Promise<void>;
   markedAllNotificationRead: () => Promise<void>;
   loadMoreNotificationList: () => Promise<void>;
   fetchNotificationList: () => Promise<void>;
   refreshNotificationList: () => Promise<void>;
+  markNotificationReadById: (id: string) => Promise<void>;
 };
 export const useNotification = create<NotificationProp>((set, get) => ({
+  markingNotificationRead: false,
   deleting: false,
   loadingMore: false,
   currentPage: 1,
@@ -36,8 +39,8 @@ export const useNotification = create<NotificationProp>((set, get) => ({
         `${apiEndPoints.FETCH_NOTIFICATION}?page=${0}&limit=${20}`,
       );
 
-      console.log(response,"This is response after fetching notification");
-      
+      console.log(response, 'This is response after fetching notification');
+
       const {totalPage, currentPage} = response?.data?.pagination;
       set({
         notificationList: response?.data?.notifications ?? [],
@@ -87,8 +90,8 @@ export const useNotification = create<NotificationProp>((set, get) => ({
         type: 'success',
         text1: response?.data?.message ?? 'Notification fetched successfully',
       });
-      console.log(response,"Notification fetch");
-      
+      console.log(response, 'Notification fetch');
+
       const {totalPage, currentPage} = response?.data?.pagination;
       set({
         notificationList: response?.data?.notifications ?? [],
@@ -156,8 +159,8 @@ export const useNotification = create<NotificationProp>((set, get) => ({
       const res = await httpClient.delete(
         `${apiEndPoints.DELETE_NOTIFICATION_BY_ID}/${id}`,
       );
-      console.log(res,"Response after deleting notification");
-      
+      console.log(res, 'Response after deleting notification');
+
       Toast.show({
         type: 'success',
         text1: res?.data?.message,
@@ -168,11 +171,29 @@ export const useNotification = create<NotificationProp>((set, get) => ({
       set({notificationList: newNotificationList});
       fetchNotificationList();
     } catch (error) {
-      const err=error as AxiosError;
+      const err = error as AxiosError;
       console.log(err?.response);
-      
     } finally {
       set({deleting: false});
+    }
+  },
+  markNotificationReadById: async (id: string) => {
+    const {markingNotificationRead} = get();
+    if (markingNotificationRead) return;
+    set({markingNotificationRead: true});
+    try {
+      const res = await httpClient.put(
+        `${apiEndPoints.MARKED_NOTIFICATION_READ_BY_ID}/${id}`,
+      );
+      const {unreadNotificationcount} = res.data;
+      useUser.setState({
+        unreadNotificationCount: unreadNotificationcount,
+      });
+    } catch (error) {
+    } finally {
+      set({
+        markingNotificationRead: false,
+      });
     }
   },
 }));

@@ -26,4 +26,5 @@ export const apiEndPoints = {
   FIND_COMPLAINT_BY_ID: 'complaint/id',
   COPLAINT_LIST_STATUS: 'complaint',
   ADD_COMMENTS: 'complaint/add-comment',
+  MARKED_NOTIFICATION_READ_BY_ID:'notification/mark-read'
 };

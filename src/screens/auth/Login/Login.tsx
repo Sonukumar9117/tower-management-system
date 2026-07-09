@@ -281,7 +281,7 @@ const Login = () => {
 
           <Animated.View style={[styles.content, animatedContentStyle]}>
             <View style={styles.header}>
-              <TextComp text="Vista Business Tower" style={styles.title} />
+              <TextComp text="Tower Sphere" style={styles.title} />
               <TextComp
                 text="Property Management Portal"
                 style={styles.subtitle}

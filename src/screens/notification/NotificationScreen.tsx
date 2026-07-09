@@ -23,6 +23,7 @@ export default function NotificationScreen() {
     deleting,
     loading,
     refreshing,
+    markingNotificationRead,
     fetchNotificationList,
     notificationList,
     refreshNotificationList,
@@ -32,7 +33,7 @@ export default function NotificationScreen() {
     totalPage,
     loadingMore,
   } = useNotification();
-  const {isLoading} = useComplainStore();
+  const {isFinding} = useComplainStore();
   useEffect(() => {
     fetchNotificationList();
     // setTimeout(() => {
@@ -48,8 +49,6 @@ export default function NotificationScreen() {
         ))}
       </View>
     );
-
-  console.log(notificationList, 'This is notification list');
 
   return (
     <View style={styles.primaryContainer}>
@@ -97,7 +96,9 @@ export default function NotificationScreen() {
           </>
         )}
       />
-      <LoaderModal isVisible={deleting || isLoading} />
+      <LoaderModal
+        isVisible={deleting || isFinding || markingNotificationRead}
+      />
     </View>
   );
 }

@@ -60,7 +60,7 @@ export default function UserStack() {
         component={RaiseComplaint}
         options={{
           headerShown: true,
-          header: () => <CustomHeader title={'Vista Business Tower'} />,
+          header: () => <CustomHeader title={'Tower Sphere'} />,
         }}
       />
       <Stack.Screen
@@ -68,9 +68,7 @@ export default function UserStack() {
         component={CreatePost}
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader showBackBtn title={'Vista Business Tower'} />
-          ),
+          header: () => <CustomHeader showBackBtn title={'Tower Sphere'} />,
         }}
       />
       <Stack.Screen
@@ -86,9 +84,7 @@ export default function UserStack() {
       <Stack.Screen
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader showBackBtn title={'Vista Business Tower'} />
-          ),
+          header: () => <CustomHeader showBackBtn title={'Tower Sphere'} />,
         }}
         name={SCREEN_NAME.NEW_TENANT}
         component={NewTenant}
@@ -96,9 +92,7 @@ export default function UserStack() {
       <Stack.Screen
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader showBackBtn title={'Vista Business Tower'} />
-          ),
+          header: () => <CustomHeader showBackBtn title={'Tower Sphere'} />,
         }}
         name={SCREEN_NAME.TENANT_PROFILE}
         component={CompanyProfile}
@@ -107,9 +101,7 @@ export default function UserStack() {
         name={SCREEN_NAME.POST_EDIT}
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader showBackBtn title={'Vista Business Tower'} />
-          ),
+          header: () => <CustomHeader showBackBtn title={'Tower Sphere'} />,
         }}
         component={EditPost}
       />
@@ -117,9 +109,7 @@ export default function UserStack() {
         name={SCREEN_NAME.TENANT_EDIT}
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader showBackBtn title={'Vista Business Tower'} />
-          ),
+          header: () => <CustomHeader showBackBtn title={'Tower Sphere'} />,
         }}
         component={EditTenant}
       />
@@ -127,9 +117,7 @@ export default function UserStack() {
         name={SCREEN_NAME.TECHNICIAN_EDIT}
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader showBackBtn title={'Vista Business Tower'} />
-          ),
+          header: () => <CustomHeader showBackBtn title={'Tower Sphere'} />,
         }}
         component={EditTechnician}
       />
@@ -137,18 +125,14 @@ export default function UserStack() {
         name={SCREEN_NAME.NOTIFICATION}
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader showBackBtn title={'Vista Business Tower'} />
-          ),
+          header: () => <CustomHeader showBackBtn title={'Tower Sphere'} />,
         }}
         component={NotificationScreen}
       />
       <Stack.Screen
         options={{
           headerShown: true,
-          header: () => (
-            <CustomHeader showBackBtn title={'Vista Business Tower'} />
-          ),
+          header: () => <CustomHeader showBackBtn title={'Tower Sphere'} />,
         }}
         name={SCREEN_NAME.NEW_TECHNICIAN}
         component={NewTechnicians}

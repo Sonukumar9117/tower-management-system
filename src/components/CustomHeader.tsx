@@ -51,7 +51,7 @@ const CustomHeader = ({title, showBackBtn}: CustomHeaderTitles) => {
           ) : (
             <Image
               source={require('../../assets/images/icon.png')}
-              style={{width: 36, height: 36}}
+              style={{width: moderateScale(36), height: moderateScale(45)}}
             />
           )}
           <Text style={styles.text}>
