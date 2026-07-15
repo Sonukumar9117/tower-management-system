@@ -1,50 +1,153 @@
-# Welcome to your Expo app 👋
+# 📱 Tower Management System
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform mobile application built with **React Native**, **Expo (Prebuild)**, and **TypeScript**.
 
-## Get started
+## 🚀 Tech Stack
 
-1. Install dependencies
+* React Native
+* Expo (Prebuild Workflow)
+* Expo Router
+* TypeScript
+* Android Studio
+* Gradle
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## 📋 Prerequisites
 
-   ```bash
-   npx expo start
-   ```
+Make sure the following tools are installed:
 
-In the output, you'll find options to open the app in a
+* Node.js (v18 or later)
+* npm
+* Android Studio
+* Android SDK
+* Java JDK 17+
+* Expo CLI
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Verify your setup:
 
 ```bash
-npm run reset-project
+node -v
+npm -v
+java -version
+adb devices
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## ⚙️ Installation
 
-To learn more about developing your project with Expo, look at the following resources:
+Clone the repository:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+git clone https://github.com/your-username/your-repository.git
+```
 
-## Join the community
+Move into the project:
 
-Join our community of developers creating universal apps.
+```bash
+cd your-repository
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Install dependencies:
+
+```bash
+npm install
+```
+
+---
+
+## ▶️ Running the Application
+
+### Generate Native Projects (Only Required Once)
+
+```bash
+npx expo prebuild
+```
+
+> Skip this step if the `android/` and `ios/` folders are already included in the repository.
+
+### Run on Android
+
+Make sure an Android emulator is running or a physical device is connected.
+
+```bash
+npx expo run:android
+```
+
+### Run on iOS (macOS only)
+
+```bash
+npx expo run:ios
+```
+
+---
+
+## 📂 Project Structure
+
+```text
+.
+├── app/
+├── android/
+├── ios/
+├── assets/
+├── components/
+├── hooks/
+├── constants/
+├── services/
+├── utils/
+├── package.json
+└── README.md
+```
+
+---
+
+## 🔄 Native Dependencies
+
+Whenever you install a native library, for example:
+
+```bash
+npx expo install react-native-reanimated
+```
+
+Run:
+
+```bash
+npx expo prebuild
+```
+
+Then rebuild the app:
+
+```bash
+npx expo run:android
+```
+
+---
+
+## 🧹 Clean Build
+
+If you encounter native build issues:
+
+```bash
+rm -rf android ios
+npx expo prebuild --clean
+npx expo run:android
+```
+
+---
+
+## 📦 Available Scripts
+
+```bash
+npm start
+npx expo run:android
+npx expo run:ios
+npx expo prebuild
+npm run lint
+```
+
+---
+
+## 📄 License
+
+MIT License
