@@ -16,9 +16,9 @@ public class FirebaseConfiguration {
         System.out.println("Initializing Firebase...");
         FileInputStream serviceAccount =
                 //when running on local
-//                new FileInputStream("D:\\tower-management-system\\service-account.json");
+                new FileInputStream("D:\\tower-management-system\\service-account.json");
         //when running on production
-        new FileInputStream("/etc/secrets/service-account.json");
+//        new FileInputStream("/etc/secrets/service-account.json");
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .build();
