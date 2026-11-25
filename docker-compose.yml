@@ -1,0 +1,12 @@
+services:
+  tower:
+    image: tower:v1
+    container_name: tower_management_system
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./service-account.json:/app/service-account.json:ro
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /app/service-account.json
