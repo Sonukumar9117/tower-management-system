@@ -10,6 +10,9 @@ import com.towerManagementSystem.tower.dto.request.ComplaintUpdateReqDto;
 import com.towerManagementSystem.tower.service.ComplaintService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -68,6 +71,7 @@ public class ComplaintController {
             ){
         return ResponseEntity.ok(complaintService.getComplaintListByStatus(page,limit,status));
     }
+
     @GetMapping("/id/{id}")
     public ResponseEntity<?>getComplaintById(@PathVariable("id")String id){
         return ResponseEntity.ok(complaintService.getComplaintById(id));
@@ -76,6 +80,7 @@ public class ComplaintController {
     public ResponseEntity<?>addComplaint(@RequestBody CommentReqDto comment){
         return new ResponseEntity<>(complaintService.addComment(comment), HttpStatus.ACCEPTED);
     }
+
     @PutMapping("/update")
     public ResponseEntity<?>updateComplaint(@RequestBody  ComplaintUpdateReqDto complaintUpdateReqDto){
         return new ResponseEntity<>(complaintService.updateComplaintById(complaintUpdateReqDto),HttpStatus.ACCEPTED);

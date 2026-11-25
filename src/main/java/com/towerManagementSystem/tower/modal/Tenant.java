@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class Tenant{
+public class Tenant {
     @Id
     private String id;
     @Column(nullable = false)
